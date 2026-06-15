@@ -138,25 +138,10 @@ async function _staticFetch(path) {
   // Analytics + map
   if (rawPath === '/api/analytics/problems') {
     const min = params.get('min_year');
-    const r = await fetch('data/analytics/problems.json');
-    const d = await r.json();
-    if (min) {
-      d.problems = d.problems.filter(p => p.year >= parseInt(min));
-      // Recompute baselines from filtered problems
-      const repZs = d.problems.filter(p => p.rep_avg_z != null).map(p => p.rep_avg_z);
-      const oppZs = d.problems.filter(p => p.opp_avg_z != null).map(p => p.opp_avg_z);
-      const avg = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b)/arr.length * 1000)/1000 : 0;
-      d.rep_baseline_z = avg(repZs);
-      d.opp_baseline_z = avg(oppZs);
-      // Tag each problem with updated rel_z
-      for (const prob of d.problems) {
-        prob.rep_rel_z = prob.rep_avg_z != null ? Math.round((prob.rep_avg_z - d.rep_baseline_z)*1000)/1000 : null;
-        prob.opp_rel_z = prob.opp_avg_z != null ? Math.round((prob.opp_avg_z - d.opp_baseline_z)*1000)/1000 : null;
-      }
-      // Recompute categories from filtered problems
-      d.categories = _recomputeAnalyticsCategories(d.problems, d.rep_baseline_z, d.opp_baseline_z);
-    }
-    return d;
+    const url = min ? `data/analytics/problems_${min}.json` : 'data/analytics/problems.json';
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`Analytics data not found for year ${min}`);
+    return r.json();
   }
   if (rawPath === '/api/analytics/role-stats') {
     const r = await fetch('data/analytics/role_stats.json'); return r.json();
