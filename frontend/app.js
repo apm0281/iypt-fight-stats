@@ -53,6 +53,31 @@ function _clientSearch(index, q) {
     .map(item => ({ name: item.name, years: item.years, teams: item.teams }));
 }
 
+const _ANA_CATS = ['Mechanics','Fluid Dynamics','Waves & Acoustics','Thermodynamics','Electromagnetism','Optics','Quantum & Modern','Other'];
+
+function _recomputeAnalyticsCategories(problems, repBaseline, oppBaseline) {
+  const bycat = {};
+  for (const p of problems) {
+    if (!bycat[p.category]) bycat[p.category] = { n: 0, rep_zs: [], opp_zs: [] };
+    bycat[p.category].n += p.n_presented || 0;
+    if (p.rep_avg_z != null) bycat[p.category].rep_zs.push(p.rep_avg_z);
+    if (p.opp_avg_z != null) bycat[p.category].opp_zs.push(p.opp_avg_z);
+  }
+  const r3 = v => v != null ? Math.round(v * 1000) / 1000 : null;
+  const mu = arr => arr.length ? arr.reduce((a,b)=>a+b)/arr.length : null;
+  return _ANA_CATS.map(cat => {
+    const d = bycat[cat] || { n: 0, rep_zs: [], opp_zs: [] };
+    const rm = mu(d.rep_zs), om = mu(d.opp_zs);
+    return {
+      category: cat,
+      n_presented: d.n,
+      rep_avg_z: r3(rm), opp_avg_z: r3(om),
+      rep_rel_z: rm != null ? r3(rm - repBaseline) : null,
+      opp_rel_z: om != null ? r3(om - oppBaseline) : null,
+    };
+  });
+}
+
 async function _staticFetch(path) {
   const [rawPath, qs] = path.split('?');
   const params = new URLSearchParams(qs || '');
@@ -115,7 +140,22 @@ async function _staticFetch(path) {
     const min = params.get('min_year');
     const r = await fetch('data/analytics/problems.json');
     const d = await r.json();
-    if (min) { d.problems = d.problems.filter(p => p.year >= parseInt(min)); }
+    if (min) {
+      d.problems = d.problems.filter(p => p.year >= parseInt(min));
+      // Recompute baselines from filtered problems
+      const repZs = d.problems.filter(p => p.rep_avg_z != null).map(p => p.rep_avg_z);
+      const oppZs = d.problems.filter(p => p.opp_avg_z != null).map(p => p.opp_avg_z);
+      const avg = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b)/arr.length * 1000)/1000 : 0;
+      d.rep_baseline_z = avg(repZs);
+      d.opp_baseline_z = avg(oppZs);
+      // Tag each problem with updated rel_z
+      for (const prob of d.problems) {
+        prob.rep_rel_z = prob.rep_avg_z != null ? Math.round((prob.rep_avg_z - d.rep_baseline_z)*1000)/1000 : null;
+        prob.opp_rel_z = prob.opp_avg_z != null ? Math.round((prob.opp_avg_z - d.opp_baseline_z)*1000)/1000 : null;
+      }
+      // Recompute categories from filtered problems
+      d.categories = _recomputeAnalyticsCategories(d.problems, d.rep_baseline_z, d.opp_baseline_z);
+    }
     return d;
   }
   if (rawPath === '/api/analytics/role-stats') {
@@ -664,7 +704,12 @@ function quartileLabel(q) {
 
 function renderProfile(p) {
   const roles = ['Reporter', 'Opponent', 'Reviewer'];
-  const yearsStr = p.years.join(', ');
+
+  // Build "Country · year(s)" subtitle
+  const uniqueTeams = [...new Set(p.years_data.map(y => y.team).filter(Boolean))];
+  const yearsStr = uniqueTeams.length === 1
+    ? `${uniqueTeams[0]} · ${p.years.join(', ')}`
+    : p.years_data.map(y => y.team ? `${y.team} · ${y.year}` : String(y.year)).join(' &nbsp;·&nbsp; ');
 
   // Overall role averages table
   const totalPerfs = roles.reduce((acc, r) =>
@@ -2713,6 +2758,9 @@ document.querySelectorAll('.rk-mode-btn').forEach(btn => {
   });
 });
 
+// Search filter
+$('rk-search').addEventListener('input', () => renderRankingsTable());
+
 // Year select
 $('rk-year-select').addEventListener('change', async e => {
   const v = e.target.value;
@@ -2825,6 +2873,12 @@ function renderRankingsTable() {
   const wrap = $('rankings-table-wrap');
   const key = rkState.sortKey;
 
+  const search = ($('rk-search')?.value || '').toLowerCase().trim();
+  const nameKey = rkState.mode === 'participants' ? 'name' : 'team';
+  const displayData = search
+    ? rkState.data.filter(r => (r[nameKey] || '').toLowerCase().includes(search) || (r.team || '').toLowerCase().includes(search))
+    : rkState.data;
+
   const headerCells = cols.map(c => {
     const arrow = c.key === key ? (rkState.sortAsc ? ' ↑' : ' ↓') : '';
     const sortedClass = c.key === key ? ' sorted' : '';
@@ -2833,9 +2887,12 @@ function renderRankingsTable() {
     return `<th class="${sortedClass}" data-col="${c.key}"${tipAttr}>${c.label}${tipIcon}<span class="sort-arrow">${arrow}</span></th>`;
   }).join('');
 
-  const rows = rkState.data.map((row, i) => {
+  const rows = displayData.map((row, i) => {
+    const globalRank = rkState.data.indexOf(row) + 1;
+    const isMatch = search && (row[nameKey] || '').toLowerCase().includes(search);
+    const rowStyle = isMatch ? ' style="background:rgba(91,141,238,.12)"' : '';
     const cells = cols.map(c => {
-      if (c.key === '_rank') return `<td class="rk-rank">${i + 1}</td>`;
+      if (c.key === '_rank') return `<td class="rk-rank">${globalRank}</td>`;
       const val = row[c.key];
       const display = val == null ? '<span class="rk-null">—</span>' : c.fmt(val);
       if (c.title) {
@@ -2845,10 +2902,12 @@ function renderRankingsTable() {
       }
       return `<td>${display}</td>`;
     }).join('');
-    return `<tr>${cells}</tr>`;
+    return `<tr${rowStyle}>${cells}</tr>`;
   }).join('');
 
-  wrap.innerHTML = `
+  const countNote = search ? `<div class="rk-filter-note">${displayData.length} of ${rkState.data.length} results</div>` : '';
+
+  wrap.innerHTML = `${countNote}
     <div class="rk-table-scroll">
       <table class="rk-table">
         <thead><tr>${headerCells}</tr></thead>

@@ -187,6 +187,14 @@ input::placeholder { color: var(--muted); }
 .rk-mode-btn { background: none; border: none; color: var(--muted); padding: 7px 16px; cursor: pointer; font-size: 0.88rem; transition: background .15s, color .15s; }
 .rk-mode-btn.active { background: var(--accent); color: #fff; }
 
+.rk-search-input {
+  flex: 1; min-width: 160px; max-width: 300px;
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  color: var(--text); padding: 7px 12px; font-size: .86rem;
+}
+.rk-search-input:focus { border-color: var(--accent); outline: none; }
+.rk-filter-note { font-size: .78rem; color: var(--muted); margin-bottom: 8px; }
+
 .rk-year-select {
   background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
   color: var(--text); padding: 7px 12px; font-size: 0.88rem; outline: none; cursor: pointer;

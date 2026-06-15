@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fight Stats — IYPT</title>
-  <link rel="stylesheet" href="style.css?v=32" />
+  <link rel="stylesheet" href="style.css?v=34" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -349,9 +349,10 @@
       <select id="rk-year-select" class="rk-year-select">
         <option value="">Loading years…</option>
       </select>
+      <input id="rk-search" type="text" placeholder="🔍 Search…" autocomplete="off" class="rk-search-input" />
     </div>
+    <div id="rankings-chart-wrap" style="margin-bottom:20px"></div>
     <div id="rankings-table-wrap"></div>
-    <div id="rankings-chart-wrap" style="margin-top:20px"></div>
   </div>
 
   <!-- ROOM MATCHUP -->
@@ -369,6 +370,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="app.js?v=33"></script>
+<script src="app.js?v=34"></script>
 </body>
 </html>
