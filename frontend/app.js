@@ -346,8 +346,8 @@ const getDuelA = autocomplete('inp-duel-a', 'sug-duel-a', 'participants', null);
 const getDuelB = autocomplete('inp-duel-b', 'sug-duel-b', 'participants', null);
 
 // Mode card quick-search inputs
-const getHeroP = autocomplete('inp-hero-p', 'sug-hero-p', 'participants', name => loadProfile(name));
-const getHeroT = autocomplete('inp-hero-t', 'sug-hero-t', 'teams', name => loadTeam(name));
+const getHeroP = autocomplete('inp-hero-p', 'sug-hero-p', 'participants', null);
+const getHeroT = autocomplete('inp-hero-t', 'sug-hero-t', 'teams', null);
 
 // Dream Team role inputs
 const getDtR = autocomplete('inp-dt-r', 'sug-dt-r', 'participants', null);
@@ -1861,6 +1861,10 @@ async function loadJury(minYear) {
     }
     const param = minYear ? `?year=${minYear}` : '';
     const data = await apiFetch(`/api/analytics/problems${param}`);
+    if (minYear && (!data.problems || data.problems.length === 0)) {
+      $('jury-content').innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted)">No problem analytics data available for ${minYear}.</div>`;
+      return;
+    }
     $('jury-content').innerHTML = renderJury(data, minYear || '');
     renderJuryCharts(data);
     $('jury-content').querySelector('#jury-year-filter')?.addEventListener('change', e => {
