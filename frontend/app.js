@@ -333,6 +333,7 @@ document.querySelectorAll('.tab').forEach(tab => {
 function autocomplete(inputId, sugId, endpoint, onSelect) {
   const inp = $(inputId);
   const sug = $(sugId);
+  if (!inp || !sug) return () => null;   // element absent in cached HTML — skip silently
   let timer = null;
   let selected = null;
 
