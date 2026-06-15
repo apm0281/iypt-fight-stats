@@ -925,12 +925,13 @@ function renderProfile(p) {
 // ── Competitor Hub ────────────────────────────────────────────────────────────
 
 async function loadCompetitorHub(name) {
-  showView('view-hub');
-  $('hub-content').innerHTML = '<div class="loader">Loading…</div>';
+  // Render hub inside view-profile — always exists in every HTML version
+  showView('view-profile');
+  $('profile-content').innerHTML = '<div class="loader">Loading…</div>';
   try {
     const p = await apiFetch(`/api/participant/${encodeURIComponent(name)}`);
-    $('hub-content').innerHTML = renderCompetitorHub(p);
-    $('hub-content').querySelectorAll('[data-action]').forEach(el => {
+    $('profile-content').innerHTML = renderCompetitorHub(p);
+    $('profile-content').querySelectorAll('[data-action]').forEach(el => {
       el.addEventListener('click', () => {
         const action = el.dataset.action;
         if (action === 'profile') {
