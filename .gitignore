@@ -1,0 +1,13 @@
+# Python
+backend/.venv/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# Database — mantenha local, não sobe pro GitHub
+backend/iypt.db
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
