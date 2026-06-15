@@ -406,7 +406,6 @@ $('back-from-team').addEventListener('click', () => showView('view-home'));
 $('back-from-compare-t').addEventListener('click', () => showView('view-home'));
 $('back-from-duel').addEventListener('click', () => showView('view-home'));
 $('back-from-dreamteam').addEventListener('click', () => showView('view-home'));
-$('back-from-hub').addEventListener('click', () => showView('view-home'));
 $('back-from-jury').addEventListener('click', () => showView('view-home'));
 $('back-from-room').addEventListener('click', () => showView('view-home'));
 $('back-from-rankings').addEventListener('click', () => showView('view-home'));
@@ -864,82 +863,7 @@ function renderProfile(p) {
   `;
 }
 
-// ── Competitor Hub ────────────────────────────────────────────────────────────
-
-async function loadCompetitorHub(name) {
-  showView('view-hub');
-  $('hub-content').innerHTML = '<div class="loader">Loading…</div>';
-  try {
-    const p = await apiFetch(`/api/participant/${encodeURIComponent(name)}`);
-    $('hub-content').innerHTML = renderCompetitorHub(p);
-    $('hub-content').querySelectorAll('[data-action]').forEach(el => {
-      el.addEventListener('click', () => {
-        const action = el.dataset.action;
-        if (action === 'profile') loadProfile(p.name);
-        else if (action === 'duel') {
-          showView('view-home');
-          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-          const t = document.querySelector('[data-tab="duel"]');
-          if (t) { t.classList.add('active'); $('tab-duel').classList.add('active'); }
-          $('inp-duel-a').value = p.name;
-          $('inp-duel-b').focus();
-        } else if (action === 'dreamteam') {
-          showView('view-home');
-          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-          const t = document.querySelector('[data-tab="dreamteam"]');
-          if (t) { t.classList.add('active'); $('tab-dreamteam').classList.add('active'); }
-          $('inp-dt-r').value = p.name;
-          $('inp-dt-o').focus();
-        }
-      });
-    });
-  } catch (err) {
-    showError(err.message);
-    showView('view-home');
-  }
-}
-
-function renderCompetitorHub(p) {
-  const latestTeam = p.years_data?.[p.years_data.length - 1]?.team || '';
-  const flag = countryFlag(latestTeam) || '';
-  const avatarContent = flag || initials(p.name);
-  const avatarStyle = flag ? 'font-size:2rem;background:var(--surface)' : '';
-
-  // Best stat
-  const roles = ['Reporter', 'Opponent', 'Reviewer'];
-  const totalFights = roles.reduce((acc, r) =>
-    acc + p.years_data.reduce((a, y) => a + (y.performances_count?.[r] || 0), 0), 0);
-  const wtZ = p.global_z != null ? p.global_z.toFixed(2) : null;
-  const statLine = wtZ != null ? `Global Z: ${wtZ >= 0 ? '+' : ''}${wtZ} · ${totalFights} fights · ${p.years.length} tournament${p.years.length > 1 ? 's' : ''}` : `${totalFights} fights · ${p.years.length} tournament${p.years.length > 1 ? 's' : ''}`;
-
-  return `
-    <div class="hub-header">
-      <div class="hub-avatar" style="${avatarStyle}">${avatarContent}</div>
-      <div class="hub-name">${p.name}</div>
-      <div class="hub-sub">${latestTeam}${latestTeam ? ' · ' : ''}${p.years.join(', ')}</div>
-      <div class="hub-sub" style="margin-top:4px">${statLine}</div>
-    </div>
-    <div class="hub-choices">
-      <div class="hub-choice" data-action="profile">
-        <div class="hub-choice-icon">📊</div>
-        <div class="hub-choice-title">Check my performance</div>
-        <div class="hub-choice-desc">See your full stats, role breakdown, and how you ranked against all participants</div>
-      </div>
-      <div class="hub-choice" data-action="duel">
-        <div class="hub-choice-icon">⚔</div>
-        <div class="hub-choice-title">Duel a rival</div>
-        <div class="hub-choice-desc">Pick any participant from IYPT history for a head-to-head role-by-role showdown</div>
-      </div>
-      <div class="hub-choice" data-action="dreamteam">
-        <div class="hub-choice-icon">🤝</div>
-        <div class="hub-choice-title">Build a Dream Team</div>
-        <div class="hub-choice-desc">Assemble a team with your friends and see where it ranks in IYPT history</div>
-      </div>
-    </div>
-  `;
-}
+// loadCompetitorHub is gone — "Find My Profile" goes directly to loadProfile
 
 // ── Team Profile ──────────────────────────────────────────────────────────────
 
