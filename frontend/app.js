@@ -385,7 +385,7 @@ $('btn-participant').addEventListener('click', () => {
 $('btn-hero-p').addEventListener('click', () => {
   const name = getHeroP();
   if (!name) { showError('Enter your name'); return; }
-  loadProfile(name);
+  loadCompetitorHub(name);
 });
 $('btn-hero-t').addEventListener('click', () => {
   const name = getHeroT();
@@ -408,6 +408,7 @@ $('back-from-duel').addEventListener('click', () => showView('view-home'));
 $('back-from-dreamteam').addEventListener('click', () => showView('view-home'));
 $('back-from-jury').addEventListener('click', () => showView('view-home'));
 $('back-from-room').addEventListener('click', () => showView('view-home'));
+$('back-from-hub').addEventListener('click', () => showView('view-home'));
 $('back-from-rankings').addEventListener('click', () => showView('view-home'));
 
 $('btn-room').addEventListener('click', () => {
@@ -872,7 +873,76 @@ function renderProfile(p) {
   `;
 }
 
-// loadCompetitorHub is gone — "Find My Profile" goes directly to loadProfile
+// ── Competitor Hub ────────────────────────────────────────────────────────────
+
+async function loadCompetitorHub(name) {
+  showView('view-hub');
+  $('hub-content').innerHTML = '<div class="loader">Loading…</div>';
+  try {
+    const p = await apiFetch(`/api/participant/${encodeURIComponent(name)}`);
+    $('hub-content').innerHTML = renderCompetitorHub(p);
+    $('hub-content').querySelectorAll('[data-action]').forEach(el => {
+      el.addEventListener('click', () => {
+        const action = el.dataset.action;
+        if (action === 'profile') {
+          loadProfile(p.name);
+        } else if (action === 'duel') {
+          showView('view-home');
+          $('inp-card-duel-a').value = p.name;
+          setTimeout(() => $('inp-card-duel-b').focus(), 80);
+        } else if (action === 'dreamteam') {
+          showView('view-home');
+          $('inp-card-dt-r').value = p.name;
+          setTimeout(() => $('inp-card-dt-o').focus(), 80);
+        }
+      });
+    });
+  } catch (err) {
+    showError(err.message);
+    showView('view-home');
+  }
+}
+
+function renderCompetitorHub(p) {
+  const latestTeam = p.years_data?.[p.years_data.length - 1]?.team || '';
+  const flag = countryFlag(latestTeam) || '';
+  const avatarContent = flag || initials(p.name);
+  const avatarStyle = flag ? 'font-size:2rem;background:var(--surface)' : '';
+  const roles = ['Reporter', 'Opponent', 'Reviewer'];
+  const totalFights = roles.reduce((acc, r) =>
+    acc + p.years_data.reduce((a, y) => a + (y.performances_count?.[r] || 0), 0), 0);
+  const wtZ = p.global_z != null ? p.global_z.toFixed(2) : null;
+  const statLine = wtZ != null
+    ? `Global Z: ${wtZ >= 0 ? '+' : ''}${wtZ} · ${totalFights} fights · ${p.years.length} tournament${p.years.length > 1 ? 's' : ''}`
+    : `${totalFights} fights · ${p.years.length} tournament${p.years.length > 1 ? 's' : ''}`;
+  const teamLine = latestTeam ? `${latestTeam} · ${p.years.join(', ')}` : p.years.join(', ');
+
+  return `
+    <div class="hub-header">
+      <div class="hub-avatar" style="${avatarStyle}">${avatarContent}</div>
+      <div class="hub-name">${p.name}</div>
+      <div class="hub-sub">${teamLine}</div>
+      <div class="hub-sub" style="margin-top:4px">${statLine}</div>
+    </div>
+    <div class="hub-choices">
+      <div class="hub-choice" data-action="profile">
+        <div class="hub-choice-icon">📊</div>
+        <div class="hub-choice-title">Check my performance</div>
+        <div class="hub-choice-desc">See your full stats, role breakdown, and how you ranked against all participants</div>
+      </div>
+      <div class="hub-choice" data-action="duel">
+        <div class="hub-choice-icon">⚔</div>
+        <div class="hub-choice-title">Duel a rival</div>
+        <div class="hub-choice-desc">Pick any participant from IYPT history for a head-to-head role-by-role showdown</div>
+      </div>
+      <div class="hub-choice" data-action="dreamteam">
+        <div class="hub-choice-icon">🤝</div>
+        <div class="hub-choice-title">Build a Dream Team</div>
+        <div class="hub-choice-desc">Assemble a team with your friends and see where it ranks in IYPT history</div>
+      </div>
+    </div>
+  `;
+}
 
 // ── Team Profile ──────────────────────────────────────────────────────────────
 
