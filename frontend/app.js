@@ -360,7 +360,7 @@ $('btn-participant').addEventListener('click', () => {
 $('btn-hero-p').addEventListener('click', () => {
   const name = getHeroP();
   if (!name) { showError('Enter your name'); return; }
-  loadCompetitorHub(name);
+  loadProfile(name);
 });
 $('btn-hero-t').addEventListener('click', () => {
   const name = getHeroT();
@@ -368,20 +368,6 @@ $('btn-hero-t').addEventListener('click', () => {
   loadTeam(name);
 });
 $('btn-hero-jury').addEventListener('click', () => loadJury());
-$('btn-hero-duel').addEventListener('click', () => {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  const t = document.querySelector('[data-tab="duel"]');
-  if (t) { t.classList.add('active'); $('tab-duel').classList.add('active'); }
-  $('inp-duel-a').focus();
-});
-$('btn-hero-dt').addEventListener('click', () => {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  const t = document.querySelector('[data-tab="dreamteam"]');
-  if (t) { t.classList.add('active'); $('tab-dreamteam').classList.add('active'); }
-  $('inp-dt-r').focus();
-});
 
 // Dream Team assemble
 $('btn-dreamteam').addEventListener('click', () => {
