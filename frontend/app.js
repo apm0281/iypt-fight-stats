@@ -1,5 +1,52 @@
 'use strict';
 
+// Ensure critical views exist regardless of cached HTML version
+(function ensureViews() {
+  const app = document.getElementById('app');
+  if (!app) return;
+  const views = {
+    'view-hub': `<button class="back-btn" id="back-from-hub">← Back</button><div id="hub-content"></div>`,
+    'view-scatter': `<button class="back-btn" id="back-from-scatter">← Back</button>
+      <h2 style="margin-bottom:16px">📈 Country Timeline</h2>
+      <p class="analytics-desc" style="margin-bottom:16px">Scatter of all participants. Highlight up to 5 countries to track their progress.</p>
+      <div class="as-section">
+        <div class="as-controls">
+          <select id="as-year-select" class="rk-year-select"><option value="all">All Years</option></select>
+          <div class="autocomplete-wrap">
+            <input id="inp-as-team" type="text" placeholder="Highlight a country… (up to 5)" autocomplete="off" />
+            <ul id="sug-as-team" class="suggestions hidden"></ul>
+          </div>
+        </div>
+        <div id="as-chips" class="as-chips"></div>
+        <div id="as-timeline" class="as-timeline"></div>
+        <div class="chart-card" id="chart-as-card" style="padding:16px;margin-top:10px;display:block">
+          <canvas id="chart-as"></canvas>
+        </div>
+      </div>`,
+    'view-rankings': `<button class="back-btn" id="back-from-rankings">← Back</button>
+      <div class="rankings-controls">
+        <div class="rk-toggle">
+          <button class="rk-mode-btn active" data-mode="participants">Participants</button>
+          <button class="rk-mode-btn" data-mode="teams">Teams</button>
+        </div>
+        <select id="rk-year-select" class="rk-year-select"><option value="">Loading years…</option></select>
+        <input id="rk-search" type="text" placeholder="🔍 Search…" autocomplete="off" class="rk-search-input" />
+      </div>
+      <div id="rankings-chart-wrap" style="margin-bottom:20px"></div>
+      <div id="rankings-table-wrap"></div>`,
+    'view-room': `<button class="back-btn" id="back-from-room">← Back</button><div id="room-content"></div>`,
+  };
+  for (const [id, html] of Object.entries(views)) {
+    if (!document.getElementById(id)) {
+      const div = document.createElement('div');
+      div.id = id;
+      div.className = 'view' + (id === 'view-scatter' || id === 'view-rankings' ? ' view-wide' : '');
+      div.innerHTML = html;
+      app.appendChild(div);
+    }
+  }
+})();
+
 // Static mode: on GitHub Pages (or any non-localhost host), read pre-exported JSON files.
 // On localhost, hit the Python backend directly.
 const STATIC = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
@@ -9,8 +56,10 @@ const STATIC = window.location.hostname !== 'localhost' && window.location.hostn
 function $(id) { return document.getElementById(id); }
 
 function showView(id) {
+  const target = document.getElementById(id);
+  if (!target) { console.warn('showView: missing', id); return; }
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  $(id).classList.add('active');
+  target.classList.add('active');
   window.scrollTo(0, 0);
 }
 
