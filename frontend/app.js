@@ -329,7 +329,7 @@ const getDtR = autocomplete('inp-dt-r', 'sug-dt-r', 'participants', null);
 const getDtO = autocomplete('inp-dt-o', 'sug-dt-o', 'participants', null);
 const getDtV = autocomplete('inp-dt-v', 'sug-dt-v', 'participants', null);
 
-// Room matchup team inputs (tab)
+// Room matchup (tab — hidden but kept for JS compatibility)
 const getRoomA = autocomplete('inp-room-a', 'sug-room-a', 'teams', null);
 const getRoomB = autocomplete('inp-room-b', 'sug-room-b', 'teams', null);
 const getRoomC = autocomplete('inp-room-c', 'sug-room-c', 'teams', null);
@@ -338,6 +338,15 @@ const getRoomC = autocomplete('inp-room-c', 'sug-room-c', 'teams', null);
 const getHeroRoomA = autocomplete('inp-hero-room-a', 'sug-hero-room-a', 'teams', null);
 const getHeroRoomB = autocomplete('inp-hero-room-b', 'sug-hero-room-b', 'teams', null);
 const getHeroRoomC = autocomplete('inp-hero-room-c', 'sug-hero-room-c', 'teams', null);
+
+// "I competed" card sub-action inputs
+const getCardDuelA = autocomplete('inp-card-duel-a', 'sug-card-duel-a', 'participants', null);
+const getCardDuelB = autocomplete('inp-card-duel-b', 'sug-card-duel-b', 'participants', null);
+const getCardDtR   = autocomplete('inp-card-dt-r',   'sug-card-dt-r',   'participants', null);
+const getCardDtO   = autocomplete('inp-card-dt-o',   'sug-card-dt-o',   'participants', null);
+const getCardDtV   = autocomplete('inp-card-dt-v',   'sug-card-dt-v',   'participants', null);
+const getCardCtA   = autocomplete('inp-card-ct-a',   'sug-card-ct-a',   'teams', null);
+const getCardCtB   = autocomplete('inp-card-ct-b',   'sug-card-ct-b',   'teams', null);
 
 // ── Profile ───────────────────────────────────────────────────────────────────
 
@@ -389,6 +398,7 @@ $('back-from-dreamteam').addEventListener('click', () => showView('view-home'));
 $('back-from-hub').addEventListener('click', () => showView('view-home'));
 $('back-from-jury').addEventListener('click', () => showView('view-home'));
 $('back-from-room').addEventListener('click', () => showView('view-home'));
+$('back-from-rankings').addEventListener('click', () => showView('view-home'));
 
 $('btn-room').addEventListener('click', () => {
   const a = getRoomA(), b = getRoomB(), c = getRoomC();
@@ -401,6 +411,31 @@ $('btn-hero-room').addEventListener('click', () => {
   if (!a || !b) { showError('Enter at least 2 teams'); return; }
   loadRoomMatchup([a, b, ...(c ? [c] : [])]);
 });
+
+// "I competed" card: Duel sub-row
+$('btn-card-duel').addEventListener('click', () => {
+  const a = getCardDuelA(), b = getCardDuelB();
+  if (!a || !b) { showError('Enter both fighter names'); return; }
+  loadDuel(a, b);
+});
+
+// "I competed" card: Dream Team sub-row
+$('btn-card-dt').addEventListener('click', () => {
+  const r = getCardDtR(), o = getCardDtO(), v = getCardDtV();
+  if (!r || !o || !v) { showError('Enter all three roles'); return; }
+  loadDreamTeam(r, o, v);
+});
+
+// "I competed" card: Compare Countries sub-row
+$('btn-card-ct').addEventListener('click', () => {
+  const a = getCardCtA(), b = getCardCtB();
+  if (!a || !b) { showError('Enter both countries'); return; }
+  loadCompareTeams(a, b);
+});
+
+// General Stats card
+$('btn-hero-rankings').addEventListener('click', () => loadRankingsView());
+// btn-hero-jury already handled below via existing loadJury() call
 
 // ── Share / URL deep-linking ──────────────────────────────────────────────────
 
@@ -446,6 +481,7 @@ function shareBtn(params, label = '🔗 Share') {
   else if (team)            setTimeout(() => loadTeam(team), 0);
   else if (jury !== null)   setTimeout(() => loadJury(), 0);
   else if (room)            setTimeout(() => loadRoomMatchup(room.split(',')), 0);
+  else if (p.get('rankings') !== null) setTimeout(() => loadRankingsView(), 0);
 })();
 
 async function loadProfile(name) {
@@ -2649,7 +2685,12 @@ function teamCols() {
   return cols;
 }
 
-// Load available years when Rankings tab is first activated
+async function loadRankingsView() {
+  showView('view-rankings');
+  await ensureRkYears();
+}
+
+// Load available years on first open
 let rkYearsLoaded = false;
 async function ensureRkYears() {
   if (rkYearsLoaded) return;

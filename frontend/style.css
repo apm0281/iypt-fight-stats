@@ -397,24 +397,89 @@ input::placeholder { color: var(--muted); }
 .intel-na { color: var(--muted); font-size: .82rem; }
 
 /* ── Mode Cards ──────────────────────────────────────────── */
-.mode-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 0 0 24px; }
-.mode-card { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 26px 22px; display: flex; flex-direction: column; gap: 11px; transition: border-color .2s, box-shadow .2s; }
-.mode-card:hover { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(91,141,238,.08); }
-.mode-card-coach:hover { border-color: var(--green); box-shadow: 0 0 0 3px rgba(0,184,148,.08); }
-.mode-icon { font-size: 2rem; line-height: 1; }
-.mode-title { font-size: 1.12rem; font-weight: 700; color: var(--text); }
-.mode-desc { color: var(--muted); font-size: .87rem; line-height: 1.55; }
-.mode-ctas { display: flex; flex-direction: column; gap: 9px; margin-top: 4px; }
-.mode-links { display: flex; gap: 8px; flex-wrap: wrap; }
-.mode-link-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 20px; padding: 5px 14px; font-size: .8rem; cursor: pointer; transition: all .15s; }
-.mode-link-btn:hover { border-color: var(--accent); color: var(--text); background: rgba(91,141,238,.08); }
+.mode-grid { display: flex; flex-direction: column; gap: 14px; margin: 0 0 32px; }
+
+.mode-card {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: row;
+  gap: 28px;
+  align-items: flex-start;
+  transition: border-color .2s, box-shadow .2s;
+}
+.mode-card:hover { border-color: rgba(91,141,238,.4); }
+.mode-card-coach:hover { border-color: rgba(0,184,148,.4); }
+
+.mode-card-info { flex: 0 0 210px; display: flex; flex-direction: column; gap: 7px; }
+.mode-icon { font-size: 1.8rem; line-height: 1; }
+.mode-title { font-size: 1.08rem; font-weight: 700; color: var(--text); }
+.mode-desc { color: var(--muted); font-size: .83rem; line-height: 1.55; }
+
+.mode-ctas { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; justify-content: center; }
+
+/* Featured "Who Will Win?" */
+.mode-card-featured {
+  border: 2px solid #fdcb6e;
+  background: linear-gradient(135deg, rgba(253,203,110,.07) 0%, rgba(225,112,85,.05) 100%);
+  box-shadow: 0 0 24px rgba(253,203,110,.12);
+}
+.mode-card-featured:hover { border-color: #fdcb6e; box-shadow: 0 0 32px rgba(253,203,110,.22); }
+.featured-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #fdcb6e, #e17055);
+  color: #1a1208;
+  font-size: .7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-top: 4px;
+  width: fit-content;
+}
+
+/* Stats card */
+.mode-card-stats { border-color: rgba(124,92,224,.3); }
+.mode-card-stats:hover { border-color: rgba(124,92,224,.6); }
+.stats-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.stats-btns .btn-primary { flex: 1; min-width: 140px; }
+.btn-primary-rankings { background: linear-gradient(135deg, #7c5ce0, #a29bfe) !important; }
+
+/* Primary action row (search + button side by side) */
+.card-primary-action { display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap; }
+.card-primary-action .autocomplete-wrap { flex: 1; min-width: 160px; }
+
+/* Sub-action rows (Duel / Dream Team / Compare) */
+.card-sub-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; padding-top: 12px; border-top: 1px solid var(--border); }
+.card-sub-row { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.card-sub-label { font-size: .76rem; font-weight: 700; color: var(--muted); white-space: nowrap; min-width: 130px; }
+.card-sub-vs { color: var(--muted); font-size: .8rem; flex-shrink: 0; }
+.card-sub-row .autocomplete-wrap { flex: 1; min-width: 100px; }
+.card-sub-row .autocomplete-wrap input { padding: 7px 10px; font-size: .82rem; }
+
+.btn-sub {
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s;
+}
+.btn-sub:hover { border-color: var(--accent); color: var(--accent); background: rgba(91,141,238,.06); }
+.btn-sub-duel { border-color: rgba(255,107,107,.35); color: var(--red); }
+.btn-sub-duel:hover { background: rgba(255,107,107,.08); border-color: var(--red); }
+
 .btn-primary-coach { background: linear-gradient(135deg, #00b894, #00cec9) !important; }
-.mode-card-room { border-color: rgba(253,203,110,.3); }
-.mode-card-room:hover { border-color: #fdcb6e; box-shadow: 0 0 0 3px rgba(253,203,110,.1); }
 .btn-primary-room { background: linear-gradient(135deg, #fdcb6e, #e17055) !important; color: #1a1208 !important; font-weight: 700; }
-.tools-divider { text-align: center; color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 14px; position: relative; }
-.tools-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border); }
-.tools-divider span { background: var(--surface); padding: 0 12px; position: relative; }
+.btn-primary-jury  { background: linear-gradient(135deg, #6c5ce7, #a29bfe) !important; }
 
 /* ── Dream Team tab inputs ───────────────────────────────── */
 .dt-inputs { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; padding: 4px 0; }
@@ -612,11 +677,10 @@ details[open] .rm-history-toggle::before { transform: rotate(90deg); }
 .site-footer a:hover { color: var(--text); }
 
 /* Responsive */
-@media (max-width: 900px) {
-  .mode-grid { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 640px) {
-  .mode-grid { grid-template-columns: 1fr; }
+@media (max-width: 700px) {
+  .mode-card { flex-direction: column; gap: 16px; }
+  .mode-card-info { flex: none; }
+  .card-sub-label { min-width: 90px; font-size: .72rem; }
   .rm-prob-name { display: none; }
   .dt-roster-grid { grid-template-columns: 1fr; }
   .prep-grid { grid-template-columns: 1fr; }
