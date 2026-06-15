@@ -43,6 +43,8 @@ def main():
 
     print("-- Analytics -------------------------------------")
     write("analytics/problems.json", queries.get_problem_analytics(None))
+    for year in years:
+        write(f"analytics/problems_{year}.json", queries.get_problem_analytics(exact_year=year))
     write("analytics/role_stats.json", queries.get_role_stats())
     write("map.json", queries.get_map_data())
 

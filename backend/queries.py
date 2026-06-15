@@ -419,7 +419,7 @@ def get_team_problem_intelligence(team_name: str, min_year: int | None = None) -
     }
 
 
-def get_problem_analytics(min_year: int | None = None) -> dict | None:
+def get_problem_analytics(min_year: int | None = None, exact_year: int | None = None) -> dict | None:
     """
     For each problem that has z-score data, return:
     - times_presented (Reporter role)
@@ -438,7 +438,10 @@ def get_problem_analytics(min_year: int | None = None) -> dict | None:
                AND pf.avg_score IS NOT NULL
                AND pf.z_avg_score IS NOT NULL"""
     params: list = []
-    if min_year is not None:
+    if exact_year is not None:
+        sql += " AND t.year = ?"
+        params.append(exact_year)
+    elif min_year is not None:
         sql += " AND t.year >= ?"
         params.append(min_year)
     sql += " GROUP BY pf.problem_number, t.year ORDER BY t.year, pf.problem_number"
@@ -455,7 +458,10 @@ def get_problem_analytics(min_year: int | None = None) -> dict | None:
                     AND pf.avg_score IS NOT NULL
                     AND pf.z_avg_score IS NOT NULL"""
     opp_params: list = []
-    if min_year is not None:
+    if exact_year is not None:
+        opp_sql += " AND t.year = ?"
+        opp_params.append(exact_year)
+    elif min_year is not None:
         opp_sql += " AND t.year >= ?"
         opp_params.append(min_year)
     opp_sql += " GROUP BY pf.problem_number, t.year ORDER BY t.year, pf.problem_number"

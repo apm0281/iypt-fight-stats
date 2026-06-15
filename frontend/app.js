@@ -137,7 +137,7 @@ async function _staticFetch(path) {
 
   // Analytics + map
   if (rawPath === '/api/analytics/problems') {
-    const min = params.get('min_year');
+    const min = params.get('year') || params.get('min_year');
     const url = min ? `data/analytics/problems_${min}.json` : 'data/analytics/problems.json';
     const r = await fetch(url);
     if (!r.ok) throw new Error(`Analytics data not found for year ${min}`);
@@ -1859,7 +1859,7 @@ async function loadJury(minYear) {
     if (!_juryYears.length) {
       _juryYears = await apiFetch('/api/rankings/years').catch(() => []);
     }
-    const param = minYear ? `?min_year=${minYear}` : '';
+    const param = minYear ? `?year=${minYear}` : '';
     const data = await apiFetch(`/api/analytics/problems${param}`);
     $('jury-content').innerHTML = renderJury(data, minYear || '');
     renderJuryCharts(data);
@@ -1923,7 +1923,7 @@ function renderJury(data, currentYear) {
       <div class="jury-sub">Explore which problems are most presented and how they score</div>
     </div>
     <div class="jury-filters">
-      <span class="intel-year-label">Filter from year:</span>
+      <span class="intel-year-label">Year:</span>
       <select class="rk-year-select" id="jury-year-filter" style="padding:5px 10px;font-size:.82rem">${yearOpts}</select>
     </div>
     <div class="jury-grid">

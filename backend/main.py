@@ -90,8 +90,8 @@ def team_intelligence(name: str, min_year: Optional[int] = Query(None)):
 
 
 @app.get("/api/analytics/problems")
-def analytics_problems(min_year: Optional[int] = Query(None)):
-    result = queries.get_problem_analytics(min_year)
+def analytics_problems(year: Optional[int] = Query(None), min_year: Optional[int] = Query(None)):
+    result = queries.get_problem_analytics(min_year=min_year, exact_year=year)
     if not result:
         raise HTTPException(404, "No problem data")
     return result
