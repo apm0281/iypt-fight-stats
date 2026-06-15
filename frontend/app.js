@@ -445,7 +445,16 @@ $('btn-card-ct').addEventListener('click', () => {
 
 // General Stats card
 $('btn-hero-rankings').addEventListener('click', () => loadRankingsView());
-// btn-hero-jury already handled below via existing loadJury() call
+$('btn-hero-scatter').addEventListener('click', () => loadScatterView());
+$('back-from-scatter').addEventListener('click', () => showView('view-home'));
+
+async function loadScatterView(teamName) {
+  showView('view-scatter');
+  if (teamName && !_asState.teams.some(t => t.name === teamName)) {
+    _asState.teams.push({ name: teamName, color: _AS_COLORS[_asState.teams.length % _AS_COLORS.length] });
+  }
+  await loadAnalytics();
+}
 
 // ── Share / URL deep-linking ──────────────────────────────────────────────────
 
@@ -971,6 +980,10 @@ function renderTeam(t, intel, peers) {
       <div>
         <div class="profile-name">${t.team}</div>
         <div class="profile-years">${t.years.join(', ')}</div>
+        <div class="share-row" style="margin-top:8px">
+          ${shareBtn({ team: t.team })}
+          <button class="mode-link-btn" style="font-size:.8rem" onclick="loadScatterView('${t.team.replace(/'/g,"\\'")}')">📈 Country Timeline</button>
+        </div>
       </div>
     </div>
     ${prepSection}
@@ -1283,8 +1296,12 @@ async function loadCompareTeams(a, b) {
   try {
     const data = await apiFetch(`/api/compare/teams?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`);
     $('compare-t-content').innerHTML = renderCompareTeams(data);
+    renderCompareTeamsChart(data);
     $('compare-t-content').querySelectorAll('[data-participant]').forEach(el => {
       el.addEventListener('click', () => loadProfile(el.dataset.participant));
+    });
+    $('compare-t-content').querySelectorAll('[data-team]').forEach(el => {
+      el.addEventListener('click', () => loadTeam(el.dataset.team));
     });
   } catch (err) {
     showError(err.message);
@@ -1292,47 +1309,184 @@ async function loadCompareTeams(a, b) {
   }
 }
 
+function _teamYearData(profile) {
+  return profile.years_data.map(yd => {
+    const memberAvgs = Object.values(yd.members).map(roles => {
+      const avgs = Object.values(roles).filter(r => r.avg != null).map(r => r.avg);
+      return avgs.length ? avgs.reduce((s, v) => s + v) / avgs.length : null;
+    }).filter(v => v != null);
+    return {
+      year: yd.year,
+      avg: memberAvgs.length ? memberAvgs.reduce((s, v) => s + v) / memberAvgs.length : null,
+      rank: yd.final_rank?.rank ?? null,
+    };
+  });
+}
+
+function _teamTopMembers(profile, n = 5) {
+  const best = {};
+  for (const yd of profile.years_data) {
+    for (const [name, roles] of Object.entries(yd.members)) {
+      const avgs = Object.values(roles).filter(r => r.avg != null).map(r => r.avg);
+      if (!avgs.length) continue;
+      const avg = avgs.reduce((s, v) => s + v) / avgs.length;
+      if (!best[name] || avg > best[name].avg) best[name] = { name, avg, years: [] };
+    }
+  }
+  for (const yd of profile.years_data)
+    for (const name of Object.keys(yd.members))
+      if (best[name] && !best[name].years.includes(yd.year)) best[name].years.push(yd.year);
+  return Object.values(best).sort((a, b) => b.avg - a.avg).slice(0, n);
+}
+
 function renderCompareTeams(data) {
   const { a, b } = data;
+  const flagA = countryFlag(a.team) || '', flagB = countryFlag(b.team) || '';
+  const ydA = _teamYearData(a), ydB = _teamYearData(b);
+  const topA = _teamTopMembers(a), topB = _teamTopMembers(b);
 
-  function renderTeamSide(team) {
-    return team.years_data.map(y => {
-      const rankStr = y.final_rank ? `#${y.final_rank.rank}` : '—';
-      const members = Object.entries(y.members).map(([name, roles]) => {
-        const scores = Object.entries(roles).map(([r, d]) =>
-          d.avg != null ? `${r[0]}:${fmt(d.avg)}` : ''
-        ).filter(Boolean).join(' ');
-        return `<div class="member-row">
-          <span class="member-name" data-participant="${name}">${name}</span>
-          <span style="color:var(--muted);font-size:.8rem">${scores}</span>
-        </div>`;
-      }).join('');
-      return `<div style="margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-          <span class="year-badge">${y.year}</span>
-          <span style="color:var(--muted);font-size:.85rem">Rank ${rankStr}</span>
+  const allAvgsA = ydA.map(y => y.avg).filter(v => v != null);
+  const allAvgsB = ydB.map(y => y.avg).filter(v => v != null);
+  const overallA = allAvgsA.length ? allAvgsA.reduce((s, v) => s + v) / allAvgsA.length : null;
+  const overallB = allAvgsB.length ? allAvgsB.reduce((s, v) => s + v) / allAvgsB.length : null;
+  const bestRankA = Math.min(...ydA.map(y => y.rank).filter(r => r != null).concat([Infinity]));
+  const bestRankB = Math.min(...ydB.map(y => y.rank).filter(r => r != null).concat([Infinity]));
+  const winner = overallA != null && overallB != null ? (overallA > overallB ? 'a' : overallB > overallA ? 'b' : null) : null;
+
+  const mapA = Object.fromEntries(ydA.map(y => [y.year, y]));
+  const mapB = Object.fromEntries(ydB.map(y => [y.year, y]));
+  const allYears = [...new Set([...ydA.map(y => y.year), ...ydB.map(y => y.year)])].sort();
+
+  const summaryHtml = `
+    <div class="ct-summary">
+      <div class="ct-team-block ${winner === 'a' ? 'ct-winner' : ''}" data-team="${a.team}">
+        <div class="ct-team-name">${flagA} ${a.team}</div>
+        <div class="ct-stat-row">
+          <div class="ct-stat"><div class="ct-stat-label">Avg Score</div><div class="ct-stat-val">${overallA != null ? overallA.toFixed(2) : '—'}</div></div>
+          <div class="ct-stat"><div class="ct-stat-label">Best Rank</div><div class="ct-stat-val">${isFinite(bestRankA) ? `#${bestRankA}` : '—'}</div></div>
+          <div class="ct-stat"><div class="ct-stat-label">Editions</div><div class="ct-stat-val">${a.years.length}</div></div>
         </div>
-        ${members}
-      </div>`;
-    }).join('');
-  }
+        ${winner === 'a' ? '<div class="ct-winner-chip">Higher avg ✓</div>' : ''}
+      </div>
+      <div class="ct-vs-mid">VS</div>
+      <div class="ct-team-block ${winner === 'b' ? 'ct-winner' : ''}" data-team="${b.team}">
+        <div class="ct-team-name">${flagB} ${b.team}</div>
+        <div class="ct-stat-row">
+          <div class="ct-stat"><div class="ct-stat-label">Avg Score</div><div class="ct-stat-val">${overallB != null ? overallB.toFixed(2) : '—'}</div></div>
+          <div class="ct-stat"><div class="ct-stat-label">Best Rank</div><div class="ct-stat-val">${isFinite(bestRankB) ? `#${bestRankB}` : '—'}</div></div>
+          <div class="ct-stat"><div class="ct-stat-label">Editions</div><div class="ct-stat-val">${b.years.length}</div></div>
+        </div>
+        ${winner === 'b' ? '<div class="ct-winner-chip">Higher avg ✓</div>' : ''}
+      </div>
+    </div>`;
+
+  const yearRows = allYears.map(yr => {
+    const yA = mapA[yr], yB = mapB[yr];
+    const rA = yA?.rank, rB = yB?.rank;
+    const yw = rA != null && rB != null ? (rA < rB ? 'a' : rB < rA ? 'b' : null) : null;
+    return `<tr>
+      <td class="ct-yr">${yr}</td>
+      <td class="${yw === 'a' ? 'ct-win' : yw === 'b' ? 'ct-lose' : ''}">
+        ${yA ? `<strong>${rA ? `#${rA}` : '?'}</strong> <span class="ct-avg">${yA.avg != null ? yA.avg.toFixed(2) : '—'}</span>` : '<span class="ct-absent">not present</span>'}
+      </td>
+      <td class="ct-yw-col">${yw === 'a' ? `${flagA}` : yw === 'b' ? `${flagB}` : '—'}</td>
+      <td class="${yw === 'b' ? 'ct-win' : yw === 'a' ? 'ct-lose' : ''}">
+        ${yB ? `<strong>${rB ? `#${rB}` : '?'}</strong> <span class="ct-avg">${yB.avg != null ? yB.avg.toFixed(2) : '—'}</span>` : '<span class="ct-absent">not present</span>'}
+      </td>
+    </tr>`;
+  }).join('');
+
+  const winA = allYears.filter(yr => { const yA = mapA[yr], yB = mapB[yr]; return yA?.rank && yB?.rank && yA.rank < yB.rank; }).length;
+  const winB = allYears.filter(yr => { const yA = mapA[yr], yB = mapB[yr]; return yA?.rank && yB?.rank && yB.rank < yA.rank; }).length;
+  const shared = allYears.filter(yr => mapA[yr] && mapB[yr]).length;
+  const recordHtml = shared > 0
+    ? `<div class="ct-record">${flagA} ${winA}–${winB} ${flagB} <span class="ct-record-sub">(${shared} shared editions · by final ranking)</span></div>`
+    : '';
+
+  const memberCard = (m) => `<div class="ct-member" data-participant="${m.name}">
+    <span class="ct-member-name">${m.name}</span>
+    <span class="ct-member-avg">${m.avg.toFixed(2)}</span>
+    <span class="ct-member-years">${m.years.join(', ')}</span>
+  </div>`;
 
   return `
-    <div class="compare-header">
-      <h2>${a.team} vs ${b.team}</h2>
-    </div>
-    <div class="compare-grid">
-      <div class="compare-col">
-        <div class="compare-name" style="color:var(--accent)">${a.team}</div>
-        ${renderTeamSide(a)}
+    <div class="compare-t-wrap">
+      <h2 class="ct-title">${flagA} ${a.team} vs ${flagB} ${b.team}</h2>
+      <div class="share-row" style="justify-content:center;margin-bottom:18px">
+        ${shareBtn({ a: a.team, b: b.team })}
       </div>
-      <div class="vs-divider"><div class="vs-circle">VS</div></div>
-      <div class="compare-col">
-        <div class="compare-name" style="color:var(--accent)">${b.team}</div>
-        ${renderTeamSide(b)}
+      ${summaryHtml}
+      ${recordHtml}
+      <div class="ct-chart-section">
+        <div class="ct-section-title">Average score per edition</div>
+        <div class="chart-card" style="padding:16px"><canvas id="chart-compare-teams" height="220"></canvas></div>
       </div>
-    </div>
-  `;
+      <div class="ct-section">
+        <div class="ct-section-title">Year-by-year final ranking</div>
+        <div style="overflow-x:auto"><table class="ct-table">
+          <thead><tr><th>Year</th><th>${flagA} ${a.team}</th><th></th><th>${flagB} ${b.team}</th></tr></thead>
+          <tbody>${yearRows}</tbody>
+        </table></div>
+      </div>
+      <div class="ct-members-grid">
+        <div class="ct-members-col">
+          <div class="ct-section-title">${flagA} ${a.team} — top scorers</div>
+          ${topA.map(memberCard).join('')}
+        </div>
+        <div class="ct-members-col">
+          <div class="ct-section-title">${flagB} ${b.team} — top scorers</div>
+          ${topB.map(memberCard).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderCompareTeamsChart(data) {
+  const C = window.Chart;
+  const el = document.getElementById('chart-compare-teams');
+  if (!C || !el) return;
+  const existing = C.getChart(el); if (existing) existing.destroy();
+
+  const { a, b } = data;
+  const ydA = _teamYearData(a), ydB = _teamYearData(b);
+  const flagA = countryFlag(a.team) || '', flagB = countryFlag(b.team) || '';
+  const allYears = [...new Set([...ydA.map(y => y.year), ...ydB.map(y => y.year)])].sort();
+  const mapA = Object.fromEntries(ydA.map(y => [y.year, y.avg]));
+  const mapB = Object.fromEntries(ydB.map(y => [y.year, y.avg]));
+
+  const gridColor = 'rgba(46,51,80,.6)', textColor = '#7a7f9a';
+  new C(el, {
+    type: 'line',
+    data: {
+      labels: allYears,
+      datasets: [
+        {
+          label: `${flagA} ${a.team}`,
+          data: allYears.map(y => mapA[y] ?? null),
+          borderColor: '#5b8dee', backgroundColor: 'rgba(91,141,238,.15)',
+          pointRadius: 5, pointHoverRadius: 7, tension: 0.3, spanGaps: false,
+        },
+        {
+          label: `${flagB} ${b.team}`,
+          data: allYears.map(y => mapB[y] ?? null),
+          borderColor: '#00b894', backgroundColor: 'rgba(0,184,148,.12)',
+          pointRadius: 5, pointHoverRadius: 7, tension: 0.3, spanGaps: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { ticks: { color: textColor }, grid: { color: gridColor } },
+        y: { min: 4, ticks: { color: textColor }, grid: { color: gridColor },
+             title: { display: true, text: 'Avg score', color: textColor, font: { size: 11 } } },
+      },
+      plugins: {
+        legend: { labels: { color: textColor, font: { size: 12 } } },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw?.toFixed(2) ?? '—'}` } },
+      },
+    },
+  });
 }
 
 // ── Duel ──────────────────────────────────────────────────────────────────────

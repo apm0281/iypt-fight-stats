@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fight Stats — IYPT</title>
-  <link rel="stylesheet" href="style.css?v=39" />
+  <link rel="stylesheet" href="style.css?v=40" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -136,6 +136,7 @@
           <div class="stats-btns">
             <button id="btn-hero-rankings" class="btn-primary btn-primary-rankings">🏅 Rankings</button>
             <button id="btn-hero-jury" class="btn-primary btn-primary-jury">⚗ Problem Analytics</button>
+            <button id="btn-hero-scatter" class="btn-primary btn-primary-scatter">📈 Country Timeline</button>
           </div>
         </div>
       </div>
@@ -237,25 +238,9 @@
         </div>
       </div>
 
-      <!-- analytics -->
-      <div class="tab-content" id="tab-analytics">
+      <!-- analytics (kept hidden for JS compatibility) -->
+      <div class="tab-content" id="tab-analytics" style="display:none!important">
         <div class="as-section">
-          <div class="section-title" style="margin-bottom:12px">Participant Scatter</div>
-          <div class="as-controls">
-            <select id="as-year-select" class="rk-year-select">
-              <option value="all">All Years</option>
-            </select>
-            <div class="autocomplete-wrap">
-              <input id="inp-as-team" type="text" placeholder="Highlight a team… (up to 5)" autocomplete="off" />
-              <ul id="sug-as-team" class="suggestions hidden"></ul>
-            </div>
-          </div>
-          <div id="as-chips" class="as-chips"></div>
-          <div id="as-timeline" class="as-timeline"></div>
-          <div class="chart-card" id="chart-as-card" style="padding:16px;margin-top:10px;display:block">
-            <canvas id="chart-as"></canvas>
-          </div>
-        </div>
 
         <div class="section-title" style="margin-top:32px;margin-bottom:10px">World Map</div>
         <p class="analytics-desc">Color = overall z-score. Circle size = average score. Click a country to open its team profile.</p>
@@ -332,6 +317,29 @@
     <div id="jury-content"></div>
   </div>
 
+  <!-- SCATTER / COUNTRY TIMELINE -->
+  <div id="view-scatter" class="view view-wide">
+    <button class="back-btn" id="back-from-scatter">← Back</button>
+    <h2 style="margin-bottom:16px">📈 Country Timeline</h2>
+    <p class="analytics-desc" style="margin-bottom:16px">Scatter of all participants by raw score and Global Z. Highlight up to 5 countries to track their progress across years.</p>
+    <div class="as-section">
+      <div class="as-controls">
+        <select id="as-year-select" class="rk-year-select">
+          <option value="all">All Years</option>
+        </select>
+        <div class="autocomplete-wrap">
+          <input id="inp-as-team" type="text" placeholder="Highlight a country… (up to 5)" autocomplete="off" />
+          <ul id="sug-as-team" class="suggestions hidden"></ul>
+        </div>
+      </div>
+      <div id="as-chips" class="as-chips"></div>
+      <div id="as-timeline" class="as-timeline"></div>
+      <div class="chart-card" id="chart-as-card" style="padding:16px;margin-top:10px;display:block">
+        <canvas id="chart-as"></canvas>
+      </div>
+    </div>
+  </div>
+
   <!-- RANKINGS -->
   <div id="view-rankings" class="view view-wide">
     <button class="back-btn" id="back-from-rankings">← Back</button>
@@ -364,6 +372,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="app.js?v=39"></script>
+<script src="app.js?v=40"></script>
 </body>
 </html>
