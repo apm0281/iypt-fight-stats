@@ -47,6 +47,41 @@
   }
 })();
 
+// Featured "Who Will Win?" card: live countdown + schedule highlighting for IYPT 2026 (Switzerland, 5-12 Jul)
+(function initFeaturedSchedule() {
+  const countdown = document.getElementById('iypt-countdown');
+  const strip = document.getElementById('iypt-schedule');
+  if (!countdown && !strip) return;
+
+  const pad = n => String(n).padStart(2, '0');
+  const todayStr = (() => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; })();
+  const TOURNEY_START = '2026-07-05';
+  const TOURNEY_END = '2026-07-12';
+
+  if (strip) {
+    strip.querySelectorAll('.schedule-chip').forEach(chip => {
+      const d = chip.dataset.date;
+      if (!d) return;
+      if (d === todayStr) chip.classList.add('is-today');
+      else if (d < todayStr) chip.classList.add('is-past');
+    });
+  }
+
+  if (countdown) {
+    if (todayStr < TOURNEY_START) {
+      const msPerDay = 86400000;
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const start = new Date(TOURNEY_START + 'T00:00:00');
+      const days = Math.round((start - today) / msPerDay);
+      countdown.textContent = `🚀 Starts in ${days} day${days === 1 ? '' : 's'}`;
+    } else if (todayStr <= TOURNEY_END) {
+      countdown.textContent = `🔴 Live now in Switzerland!`;
+    } else {
+      countdown.textContent = `✅ IYPT 2026 wrapped`;
+    }
+  }
+})();
+
 // Static mode: on GitHub Pages (or any non-localhost host), read pre-exported JSON files.
 // On localhost, hit the Python backend directly.
 const STATIC = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';

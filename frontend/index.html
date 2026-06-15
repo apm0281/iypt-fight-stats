@@ -22,28 +22,62 @@
 
       <!-- 1. Who Will Win? — FEATURED -->
       <div class="mode-card mode-card-room mode-card-featured">
-        <div class="mode-card-info">
-          <div class="mode-icon">🎲</div>
-          <div class="mode-title">Who Will Win?</div>
-          <div class="mode-desc">Enter the teams in a fight room — veja quem o histórico diz pra apostar, com probabilidade e confiança.</div>
-          <span class="featured-badge">Copa 2026 🔥</span>
+        <div class="featured-top">
+          <div class="mode-card-info">
+            <div class="mode-icon">🎲</div>
+            <div class="mode-title">Who Will Win?</div>
+            <div class="mode-desc">Enter the teams in a fight room — see what history says about who to bet on, with win probability and confidence.</div>
+            <span class="featured-badge">🇨🇭 IYPT 2026 · Switzerland</span>
+          </div>
+          <div class="mode-ctas">
+            <div class="room-inputs">
+              <div class="autocomplete-wrap">
+                <input id="inp-hero-room-a" type="text" placeholder="Team A…" autocomplete="off" />
+                <ul id="sug-hero-room-a" class="suggestions hidden"></ul>
+              </div>
+              <div class="autocomplete-wrap">
+                <input id="inp-hero-room-b" type="text" placeholder="Team B…" autocomplete="off" />
+                <ul id="sug-hero-room-b" class="suggestions hidden"></ul>
+              </div>
+              <div class="autocomplete-wrap">
+                <input id="inp-hero-room-c" type="text" placeholder="Team C (opcional)…" autocomplete="off" />
+                <ul id="sug-hero-room-c" class="suggestions hidden"></ul>
+              </div>
+            </div>
+            <button id="btn-hero-room" class="btn-primary btn-primary-room">Quem vai ganhar? 🎯</button>
+          </div>
         </div>
-        <div class="mode-ctas">
-          <div class="room-inputs">
-            <div class="autocomplete-wrap">
-              <input id="inp-hero-room-a" type="text" placeholder="Team A…" autocomplete="off" />
-              <ul id="sug-hero-room-a" class="suggestions hidden"></ul>
+        <div class="featured-schedule">
+          <div class="featured-schedule-head">
+            <span class="featured-dates">📅 5–12 Jul 2026 · 5 preliminary rounds + Final</span>
+            <span class="featured-countdown" id="iypt-countdown"></span>
+          </div>
+          <div class="schedule-strip" id="iypt-schedule">
+            <div class="schedule-chip" data-date="2026-07-06">
+              <span class="schedule-chip-label">R1</span>
+              <span class="schedule-chip-date">Mon 6</span>
             </div>
-            <div class="autocomplete-wrap">
-              <input id="inp-hero-room-b" type="text" placeholder="Team B…" autocomplete="off" />
-              <ul id="sug-hero-room-b" class="suggestions hidden"></ul>
+            <div class="schedule-chip" data-date="2026-07-07">
+              <span class="schedule-chip-label">R2</span>
+              <span class="schedule-chip-date">Tue 7</span>
             </div>
-            <div class="autocomplete-wrap">
-              <input id="inp-hero-room-c" type="text" placeholder="Team C (opcional)…" autocomplete="off" />
-              <ul id="sug-hero-room-c" class="suggestions hidden"></ul>
+            <div class="schedule-chip" data-date="2026-07-08">
+              <span class="schedule-chip-label">R3</span>
+              <span class="schedule-chip-date">Wed 8 AM</span>
+            </div>
+            <div class="schedule-chip" data-date="2026-07-08">
+              <span class="schedule-chip-label">R4</span>
+              <span class="schedule-chip-date">Wed 8 PM</span>
+            </div>
+            <div class="schedule-chip" data-date="2026-07-10">
+              <span class="schedule-chip-label">R5</span>
+              <span class="schedule-chip-date">Fri 10</span>
+            </div>
+            <div class="schedule-chip schedule-chip-final" data-date="2026-07-11">
+              <span class="schedule-chip-label">🏆 Final</span>
+              <span class="schedule-chip-date">Sat 11</span>
             </div>
           </div>
-          <button id="btn-hero-room" class="btn-primary btn-primary-room">Quem vai ganhar? 🎯</button>
         </div>
       </div>
 
