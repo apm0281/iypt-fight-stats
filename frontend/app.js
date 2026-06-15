@@ -2759,7 +2759,7 @@ document.querySelectorAll('.rk-mode-btn').forEach(btn => {
 });
 
 // Search filter
-$('rk-search').addEventListener('input', () => renderRankingsTable());
+$('rk-search').addEventListener('input', () => { renderRankingsTable(); renderRankingsScatter(); });
 
 // Year select
 $('rk-year-select').addEventListener('change', async e => {
@@ -2809,17 +2809,26 @@ function renderRankingsScatter() {
   const gridColor = 'rgba(46,51,80,.6)';
   const textColor = '#7a7f9a';
   const nameKey = rkState.mode === 'participants' ? 'name' : 'team';
+  const search = ($('rk-search')?.value || '').toLowerCase().trim();
+
+  const points = data.map(r => ({ x: r.overall_avg, y: r[zKey], name: r[nameKey] }));
+  const isHit = data.map(r => search && (r[nameKey] || '').toLowerCase().includes(search));
+  const bgColors    = isHit.map(h => h ? '#ff4757' : 'rgba(91,141,238,.55)');
+  const borderColors = isHit.map(h => h ? '#ff1f35' : '#5b8dee');
+  const radii       = isHit.map(h => h ? 13 : 5);
+  const hoverRadii  = isHit.map(h => h ? 15 : 7);
 
   new C(el, {
     type: 'scatter',
     data: {
       datasets: [{
         label: rkState.mode === 'participants' ? 'Participants' : 'Teams',
-        data: data.map(r => ({ x: r.overall_avg, y: r[zKey], name: r[nameKey] })),
-        backgroundColor: 'rgba(91,141,238,.55)',
-        borderColor: '#5b8dee',
-        pointRadius: 5,
-        pointHoverRadius: 7,
+        data: points,
+        backgroundColor: bgColors,
+        borderColor: borderColors,
+        pointRadius: radii,
+        pointHoverRadius: hoverRadii,
+        borderWidth: isHit.map(h => h ? 2 : 1),
       }],
     },
     options: {
