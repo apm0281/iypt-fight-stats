@@ -425,79 +425,79 @@ const getCardCtB   = autocomplete('inp-card-ct-b',   'sug-card-ct-b',   'teams',
 
 // ── Profile ───────────────────────────────────────────────────────────────────
 
-$('btn-participant').addEventListener('click', () => {
+$('btn-participant')?.addEventListener('click', () => {
   const name = getParticipant();
   if (!name) { showError('Enter a participant name'); return; }
   loadProfile(name);
 });
 
 // Hero mode card buttons
-$('btn-hero-p').addEventListener('click', () => {
+$('btn-hero-p')?.addEventListener('click', () => {
   const name = getHeroP();
   if (!name) { showError('Enter your name'); return; }
   loadCompetitorHub(name);
 });
-$('btn-hero-t').addEventListener('click', () => {
+$('btn-hero-t')?.addEventListener('click', () => {
   const name = getHeroT();
   if (!name) { showError('Enter your team/country'); return; }
   loadTeam(name);
 });
-$('btn-hero-jury').addEventListener('click', () => loadJury());
+$('btn-hero-jury')?.addEventListener('click', () => loadJury());
 
 // Dream Team assemble
-$('btn-dreamteam').addEventListener('click', () => {
+$('btn-dreamteam')?.addEventListener('click', () => {
   const r = getDtR(), o = getDtO(), v = getDtV();
   if (!r || !o || !v) { showError('Enter all three names'); return; }
   loadDreamTeam(r, o, v);
 });
 
-$('back-from-profile').addEventListener('click', () => showView('view-home'));
-$('back-from-team').addEventListener('click', () => showView('view-home'));
-$('back-from-compare-t').addEventListener('click', () => showView('view-home'));
-$('back-from-duel').addEventListener('click', () => showView('view-home'));
-$('back-from-dreamteam').addEventListener('click', () => showView('view-home'));
-$('back-from-jury').addEventListener('click', () => showView('view-home'));
-$('back-from-room').addEventListener('click', () => showView('view-home'));
-$('back-from-hub').addEventListener('click', () => showView('view-home'));
-$('back-from-rankings').addEventListener('click', () => showView('view-home'));
+$('back-from-profile')?.addEventListener('click', () => showView('view-home'));
+$('back-from-team')?.addEventListener('click', () => showView('view-home'));
+$('back-from-compare-t')?.addEventListener('click', () => showView('view-home'));
+$('back-from-duel')?.addEventListener('click', () => showView('view-home'));
+$('back-from-dreamteam')?.addEventListener('click', () => showView('view-home'));
+$('back-from-jury')?.addEventListener('click', () => showView('view-home'));
+$('back-from-room')?.addEventListener('click', () => showView('view-home'));
+$('back-from-hub')?.addEventListener('click', () => showView('view-home'));
+$('back-from-rankings')?.addEventListener('click', () => showView('view-home'));
 
-$('btn-room').addEventListener('click', () => {
+$('btn-room')?.addEventListener('click', () => {
   const a = getRoomA(), b = getRoomB(), c = getRoomC();
   if (!a || !b) { showError('Enter at least 2 teams'); return; }
   loadRoomMatchup([a, b, ...(c ? [c] : [])]);
 });
 
-$('btn-hero-room').addEventListener('click', () => {
+$('btn-hero-room')?.addEventListener('click', () => {
   const a = getHeroRoomA(), b = getHeroRoomB(), c = getHeroRoomC();
   if (!a || !b) { showError('Enter at least 2 teams'); return; }
   loadRoomMatchup([a, b, ...(c ? [c] : [])]);
 });
 
 // "I competed" card: Duel sub-row
-$('btn-card-duel').addEventListener('click', () => {
+$('btn-card-duel')?.addEventListener('click', () => {
   const a = getCardDuelA(), b = getCardDuelB();
   if (!a || !b) { showError('Enter both fighter names'); return; }
   loadDuel(a, b);
 });
 
 // "I competed" card: Dream Team sub-row
-$('btn-card-dt').addEventListener('click', () => {
+$('btn-card-dt')?.addEventListener('click', () => {
   const r = getCardDtR(), o = getCardDtO(), v = getCardDtV();
   if (!r || !o || !v) { showError('Enter all three roles'); return; }
   loadDreamTeam(r, o, v);
 });
 
 // "I competed" card: Compare Countries sub-row
-$('btn-card-ct').addEventListener('click', () => {
+$('btn-card-ct')?.addEventListener('click', () => {
   const a = getCardCtA(), b = getCardCtB();
   if (!a || !b) { showError('Enter both countries'); return; }
   loadCompareTeams(a, b);
 });
 
 // General Stats card
-$('btn-hero-rankings').addEventListener('click', () => loadRankingsView());
-$('btn-hero-scatter').addEventListener('click', () => loadScatterView());
-$('back-from-scatter').addEventListener('click', () => showView('view-home'));
+$('btn-hero-rankings')?.addEventListener('click', () => loadRankingsView());
+$('btn-hero-scatter')?.addEventListener('click', () => loadScatterView());
+$('back-from-scatter')?.addEventListener('click', () => showView('view-home'));
 
 async function loadScatterView(teamName) {
   showView('view-scatter');
@@ -997,7 +997,7 @@ function renderCompetitorHub(p) {
 
 // ── Team Profile ──────────────────────────────────────────────────────────────
 
-$('btn-team').addEventListener('click', () => {
+$('btn-team')?.addEventListener('click', () => {
   const name = getTeam();
   if (!name) { showError('Enter a team name'); return; }
   loadTeam(name);
@@ -1405,7 +1405,7 @@ function renderTeamIntelligence(intel, teamYears, currentFilterVal) {
 
 // ── Compare Teams ─────────────────────────────────────────────────────────────
 
-$('btn-compare-t').addEventListener('click', () => {
+$('btn-compare-t')?.addEventListener('click', () => {
   const a = getCtA(), b = getCtB();
   if (!a || !b) { showError('Enter both team names'); return; }
   loadCompareTeams(a, b);
@@ -1612,7 +1612,7 @@ function renderCompareTeamsChart(data) {
 
 // ── Duel ──────────────────────────────────────────────────────────────────────
 
-$('btn-duel').addEventListener('click', () => {
+$('btn-duel')?.addEventListener('click', () => {
   const a = getDuelA(), b = getDuelB();
   if (!a || !b) { showError('Enter both fighters'); return; }
   if (a.toLowerCase() === b.toLowerCase()) { showError('Pick two different fighters'); return; }
@@ -2468,7 +2468,7 @@ document.querySelectorAll('.tab').forEach(tab => {
 });
 
 // Year selector for scatter
-$('as-year-select').addEventListener('change', async e => {
+$('as-year-select')?.addEventListener('change', async e => {
   _asState.year = e.target.value;
   tlStopTimer();
   _asState.tlYear = null;
@@ -2947,10 +2947,10 @@ document.querySelectorAll('.rk-mode-btn').forEach(btn => {
 });
 
 // Search filter
-$('rk-search').addEventListener('input', () => { renderRankingsTable(); renderRankingsScatter(); });
+$('rk-search')?.addEventListener('input', () => { renderRankingsTable(); renderRankingsScatter(); });
 
 // Year select
-$('rk-year-select').addEventListener('change', async e => {
+$('rk-year-select')?.addEventListener('change', async e => {
   const v = e.target.value;
   rkState.year = v === 'all' ? 'all' : parseInt(v);
   await loadRankings();
