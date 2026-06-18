@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fight Stats — IYPT</title>
-  <link rel="stylesheet" href="style.css?v=40" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=42" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -14,7 +16,7 @@
   <div id="view-home" class="view active">
     <header class="hero">
       <h1>Fight Stats</h1>
-      <p class="subtitle">IYPT · 2017–2025</p>
+      <p class="subtitle">Fight records, player rankings &amp; stats from 9 years of IYPT competition</p>
     </header>
 
     <!-- Mode Cards — vertical stack -->
@@ -81,8 +83,15 @@
         </div>
       </div>
 
+      <!-- Home nav tabs -->
+      <div class="home-tabs">
+        <button class="home-tab active" data-panel="competed">🏆 I competed in IYPT</button>
+        <button class="home-tab" data-panel="coaching">📊 I'm coaching a team</button>
+        <button class="home-tab" data-panel="stats">📈 Stats &amp; Rankings</button>
+      </div>
+
       <!-- 2. I competed in IYPT -->
-      <div class="mode-card">
+      <div class="mode-card home-panel" data-panel="competed">
         <div class="mode-card-info">
           <div class="mode-icon">🏆</div>
           <div class="mode-title">I competed in IYPT</div>
@@ -144,7 +153,7 @@
       </div>
 
       <!-- 3. I'm coaching a team -->
-      <div class="mode-card mode-card-coach">
+      <div class="mode-card mode-card-coach home-panel" data-panel="coaching" style="display:none">
         <div class="mode-card-info">
           <div class="mode-icon">📊</div>
           <div class="mode-title">I'm coaching a team</div>
@@ -160,7 +169,7 @@
       </div>
 
       <!-- 4. General Stats & Rankings -->
-      <div class="mode-card mode-card-stats">
+      <div class="mode-card mode-card-stats home-panel" data-panel="stats" style="display:none">
         <div class="mode-card-info">
           <div class="mode-icon">📈</div>
           <div class="mode-title">General Stats &amp; Rankings</div>
@@ -414,6 +423,17 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.querySelectorAll('.home-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const panel = btn.dataset.panel;
+    document.querySelectorAll('.home-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.home-panel').forEach(p => { p.style.display = 'none'; });
+    btn.classList.add('active');
+    document.querySelector(`.home-panel[data-panel="${panel}"]`).style.display = '';
+  });
+});
+</script>
 <script src="app.js?v=44"></script>
 </body>
 </html>
