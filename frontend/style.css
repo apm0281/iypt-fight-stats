@@ -536,10 +536,13 @@ input::placeholder { color: var(--muted); }
 .card-primary-action { display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap; }
 .card-primary-action .autocomplete-wrap { flex: 1; min-width: 160px; }
 
-/* Sub-action rows (Duel / Dream Team / Compare) */
-.card-sub-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; padding-top: 12px; border-top: 1px solid var(--border); }
+/* Sub-action tabs (Duel / Dream Team / Compare Countries) */
+.card-sub-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-top: 12px; }
+.card-sub-tab { background: none; border: none; padding: 8px 0; color: var(--muted); cursor: pointer; font-size: .82rem; font-weight: 700; font-family: inherit; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color .15s; flex: 1; text-align: center; white-space: nowrap; }
+.card-sub-tab:hover { color: var(--text); }
+.card-sub-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.card-sub-panel { padding-top: 10px; }
 .card-sub-row { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
-.card-sub-label { font-size: .76rem; font-weight: 700; color: var(--muted); white-space: nowrap; min-width: 130px; }
 .card-sub-vs { color: var(--muted); font-size: .8rem; flex-shrink: 0; }
 .card-sub-row .autocomplete-wrap { flex: 1; min-width: 100px; }
 .card-sub-row .autocomplete-wrap input { padding: 7px 10px; font-size: .82rem; }

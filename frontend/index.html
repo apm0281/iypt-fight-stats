@@ -6,7 +6,7 @@
   <title>Fight Stats — IYPT</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=43" />
+  <link rel="stylesheet" href="style.css?v=44" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -111,9 +111,13 @@
             </div>
             <button id="btn-hero-p" class="btn-primary">Find My Profile</button>
           </div>
-          <div class="card-sub-actions">
+          <div class="card-sub-tabs">
+            <button class="card-sub-tab active" data-subtab="duel">⚔ Duel</button>
+            <button class="card-sub-tab" data-subtab="dreamteam">🤝 Dream Team</button>
+            <button class="card-sub-tab" data-subtab="compare">🌍 Compare Countries</button>
+          </div>
+          <div class="card-sub-panel" data-subtab="duel">
             <div class="card-sub-row">
-              <span class="card-sub-label">⚔ Duel</span>
               <div class="autocomplete-wrap">
                 <input id="inp-card-duel-a" type="text" placeholder="Fighter A…" autocomplete="off" />
                 <ul id="sug-card-duel-a" class="suggestions hidden"></ul>
@@ -125,8 +129,9 @@
               </div>
               <button id="btn-card-duel" class="btn-sub btn-sub-duel">Fight!</button>
             </div>
+          </div>
+          <div class="card-sub-panel" data-subtab="dreamteam" style="display:none">
             <div class="card-sub-row">
-              <span class="card-sub-label">🤝 Dream Team</span>
               <div class="autocomplete-wrap">
                 <input id="inp-card-dt-r" type="text" placeholder="Reporter…" autocomplete="off" />
                 <ul id="sug-card-dt-r" class="suggestions hidden"></ul>
@@ -141,8 +146,9 @@
               </div>
               <button id="btn-card-dt" class="btn-sub">Assemble ⚡</button>
             </div>
+          </div>
+          <div class="card-sub-panel" data-subtab="compare" style="display:none">
             <div class="card-sub-row">
-              <span class="card-sub-label">🌍 Compare Countries</span>
               <div class="autocomplete-wrap">
                 <input id="inp-card-ct-a" type="text" placeholder="Country A…" autocomplete="off" />
                 <ul id="sug-card-ct-a" class="suggestions hidden"></ul>
@@ -437,6 +443,16 @@ document.querySelectorAll('.home-tab').forEach(btn => {
     document.querySelectorAll('.home-panel').forEach(p => { p.style.display = 'none'; });
     btn.classList.add('active');
     document.querySelector(`.home-panel[data-panel="${panel}"]`).style.display = '';
+  });
+});
+document.querySelectorAll('.card-sub-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const subtab = btn.dataset.subtab;
+    const card = btn.closest('.mode-card');
+    card.querySelectorAll('.card-sub-tab').forEach(b => b.classList.remove('active'));
+    card.querySelectorAll('.card-sub-panel').forEach(p => { p.style.display = 'none'; });
+    btn.classList.add('active');
+    card.querySelector(`.card-sub-panel[data-subtab="${subtab}"]`).style.display = '';
   });
 });
 </script>
