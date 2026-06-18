@@ -6,7 +6,7 @@
   <title>Fight Stats — IYPT</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=42" />
+  <link rel="stylesheet" href="style.css?v=43" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -42,42 +42,48 @@
                 <ul id="sug-hero-room-b" class="suggestions hidden"></ul>
               </div>
               <div class="autocomplete-wrap">
-                <input id="inp-hero-room-c" type="text" placeholder="Team C (opcional)…" autocomplete="off" />
+                <input id="inp-hero-room-c" type="text" placeholder="Team C (optional)…" autocomplete="off" />
                 <ul id="sug-hero-room-c" class="suggestions hidden"></ul>
               </div>
             </div>
-            <button id="btn-hero-room" class="btn-primary btn-primary-room">Quem vai ganhar? 🎯</button>
-          </div>
-        </div>
-        <div class="featured-schedule">
-          <div class="featured-schedule-head">
-            <span class="featured-dates">📅 5–12 Jul 2026 · 5 preliminary rounds + Final</span>
-            <span class="featured-countdown" id="iypt-countdown"></span>
-          </div>
-          <div class="schedule-strip" id="iypt-schedule">
-            <div class="schedule-chip" data-date="2026-07-06">
-              <span class="schedule-chip-label">R1</span>
-              <span class="schedule-chip-date">Mon 6</span>
-            </div>
-            <div class="schedule-chip" data-date="2026-07-07">
-              <span class="schedule-chip-label">R2</span>
-              <span class="schedule-chip-date">Tue 7</span>
-            </div>
-            <div class="schedule-chip" data-date="2026-07-08">
-              <span class="schedule-chip-label">R3</span>
-              <span class="schedule-chip-date">Wed 8 AM</span>
-            </div>
-            <div class="schedule-chip" data-date="2026-07-08">
-              <span class="schedule-chip-label">R4</span>
-              <span class="schedule-chip-date">Wed 8 PM</span>
-            </div>
-            <div class="schedule-chip" data-date="2026-07-10">
-              <span class="schedule-chip-label">R5</span>
-              <span class="schedule-chip-date">Fri 10</span>
-            </div>
-            <div class="schedule-chip schedule-chip-final" data-date="2026-07-11">
-              <span class="schedule-chip-label">🏆 Final</span>
-              <span class="schedule-chip-date">Sat 11</span>
+            <button id="btn-hero-room" class="btn-primary btn-primary-room">Who Will Win? 🎯</button>
+            <div class="featured-schedule">
+              <div class="featured-schedule-head">
+                <span class="featured-dates">📅 5–12 Jul 2026 · All times in BRT (UTC−3)</span>
+                <span class="featured-countdown" id="iypt-countdown"></span>
+              </div>
+              <div class="schedule-strip" id="iypt-schedule">
+                <div class="schedule-chip" data-date="2026-07-06">
+                  <span class="schedule-chip-label">R1</span>
+                  <span class="schedule-chip-date">Mon 6</span>
+                  <span class="schedule-chip-time">8:00</span>
+                </div>
+                <div class="schedule-chip" data-date="2026-07-07">
+                  <span class="schedule-chip-label">R2</span>
+                  <span class="schedule-chip-date">Tue 7</span>
+                  <span class="schedule-chip-time">3:00</span>
+                </div>
+                <div class="schedule-chip" data-date="2026-07-08">
+                  <span class="schedule-chip-label">R3</span>
+                  <span class="schedule-chip-date">Wed 8</span>
+                  <span class="schedule-chip-time">3:00</span>
+                </div>
+                <div class="schedule-chip" data-date="2026-07-08">
+                  <span class="schedule-chip-label">R4</span>
+                  <span class="schedule-chip-date">Wed 8</span>
+                  <span class="schedule-chip-time">8:30</span>
+                </div>
+                <div class="schedule-chip" data-date="2026-07-10">
+                  <span class="schedule-chip-label">R5</span>
+                  <span class="schedule-chip-date">Fri 10</span>
+                  <span class="schedule-chip-time">3:00</span>
+                </div>
+                <div class="schedule-chip schedule-chip-final" data-date="2026-07-11">
+                  <span class="schedule-chip-label">🏆 Final</span>
+                  <span class="schedule-chip-date">Sat 11</span>
+                  <span class="schedule-chip-time">3:00</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -418,7 +424,7 @@
 </div>
 
 <footer class="site-footer">
-  Dados: <a href="https://cc.iypt.org" target="_blank" rel="noopener">cc.iypt.org</a> / IYPT &nbsp;·&nbsp; Projeto não oficial &nbsp;·&nbsp; Sem fins lucrativos
+  Data: <a href="https://cc.iypt.org" target="_blank" rel="noopener">cc.iypt.org</a> / IYPT &nbsp;·&nbsp; Unofficial project &nbsp;·&nbsp; Non-profit
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>

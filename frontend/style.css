@@ -406,7 +406,7 @@ input::placeholder { color: var(--muted); }
 
 /* ── Home tabs ───────────────────────────────── */
 .home-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin: 4px 0 0; flex-wrap: wrap; }
-.home-tab { background: none; border: none; padding: 11px 22px; color: var(--muted); cursor: pointer; font-size: 0.9rem; font-weight: 700; font-family: inherit; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color .15s; white-space: nowrap; }
+.home-tab { background: none; border: none; padding: 11px 22px; color: var(--muted); cursor: pointer; font-size: 0.9rem; font-weight: 700; font-family: inherit; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color .15s; white-space: nowrap; flex: 1; text-align: center; }
 .home-tab:hover { color: var(--text); }
 .home-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
@@ -436,13 +436,33 @@ input::placeholder { color: var(--muted); }
 
 /* Featured "Who Will Win?" */
 .mode-card-featured {
-  border: 2px solid #fdcb6e;
-  background: linear-gradient(135deg, rgba(253,203,110,.07) 0%, rgba(225,112,85,.05) 100%);
-  box-shadow: 0 0 24px rgba(253,203,110,.12);
+  border: 2px solid #1a5c35;
+  background: linear-gradient(145deg, #1b5e35 0%, #267547 100%);
+  box-shadow: 0 4px 28px rgba(27,94,53,.28);
   flex-direction: column;
   gap: 0;
 }
-.mode-card-featured:hover { border-color: #fdcb6e; box-shadow: 0 0 32px rgba(253,203,110,.22); }
+.mode-card-featured:hover { border-color: #1a5c35; box-shadow: 0 6px 36px rgba(27,94,53,.38); }
+
+/* Featured card — dark bg overrides */
+.mode-card-featured .mode-title { color: #fff; }
+.mode-card-featured .mode-desc { color: rgba(255,255,255,.78); }
+.mode-card-featured .mode-card-info { justify-content: space-between; }
+.mode-card-featured .room-inputs { flex-wrap: nowrap; }
+.mode-card-featured .room-inputs .autocomplete-wrap { flex: 1 1 0; min-width: 0; }
+.mode-card-featured input[type="text"] { background: rgba(255,255,255,.93); border-color: rgba(255,255,255,.2); color: #1a2e20; }
+.mode-card-featured input[type="text"]:focus { border-color: rgba(255,255,255,.65); }
+.mode-card-featured input::placeholder { color: #617568; }
+.mode-card-featured .schedule-chip { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.18); }
+.mode-card-featured .schedule-chip-label { color: rgba(255,255,255,.95); }
+.mode-card-featured .schedule-chip-date { color: rgba(255,255,255,.55); }
+.mode-card-featured .schedule-chip-time { color: rgba(255,255,255,.5); }
+.mode-card-featured .schedule-chip.is-today { border-color: #fdcb6e; background: rgba(253,203,110,.18); }
+.mode-card-featured .schedule-chip.is-today .schedule-chip-label { color: #fdcb6e; }
+.mode-card-featured .schedule-chip.is-past { opacity: .28; }
+.mode-card-featured .schedule-chip-final { border-color: rgba(255,215,110,.4); }
+.mode-card-featured .schedule-chip-final .schedule-chip-label { color: #ffd76e; }
+.mode-card-featured .featured-countdown { background: rgba(253,203,110,.15); border-color: rgba(253,203,110,.38); }
 .featured-top { display: flex; flex-direction: row; gap: 28px; align-items: flex-start; width: 100%; }
 .featured-badge {
   display: inline-block;
@@ -460,15 +480,15 @@ input::placeholder { color: var(--muted); }
 
 /* Featured schedule strip */
 .featured-schedule {
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px dashed rgba(253,203,110,.3);
+  margin-top: 2px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(255,255,255,.2);
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 .featured-schedule-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.featured-dates { font-size: .8rem; color: var(--muted); font-weight: 600; }
+.featured-dates { font-size: .8rem; color: rgba(255,255,255,.65); font-weight: 600; }
 .featured-countdown {
   display: inline-flex;
   align-items: center;
@@ -498,6 +518,7 @@ input::placeholder { color: var(--muted); }
 }
 .schedule-chip-label { font-size: .74rem; font-weight: 800; color: var(--text); }
 .schedule-chip-date { font-size: .68rem; color: var(--muted); }
+.schedule-chip-time { font-size: .62rem; color: var(--muted); }
 .schedule-chip.is-today { border-color: #fdcb6e; background: rgba(253,203,110,.14); box-shadow: 0 0 10px rgba(253,203,110,.25); }
 .schedule-chip.is-today .schedule-chip-label { color: #fdcb6e; }
 .schedule-chip.is-past { opacity: .42; }
@@ -798,6 +819,7 @@ details[open] .rm-history-toggle::before { transform: rotate(90deg); }
   .schedule-chip { min-width: 52px; padding: 6px 4px; }
   .schedule-chip-label { font-size: .68rem; }
   .schedule-chip-date { font-size: .62rem; }
+  .mode-card-featured .room-inputs { flex-wrap: wrap; }
   .card-sub-label { min-width: 90px; font-size: .72rem; }
   .rm-prob-name { display: none; }
   .dt-roster-grid { grid-template-columns: 1fr; }
