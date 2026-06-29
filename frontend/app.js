@@ -483,6 +483,13 @@ const getCardDtV   = autocomplete('inp-card-dt-v',   'sug-card-dt-v',   'partici
 const getCardCtA   = autocomplete('inp-card-ct-a',   'sug-card-ct-a',   'teams', null);
 const getCardCtB   = autocomplete('inp-card-ct-b',   'sug-card-ct-b',   'teams', null);
 
+// Duel / Dream Team "big input" setup screens (reached from the competitor hub)
+const getDuelSetupA = autocomplete('inp-duelsetup-a', 'sug-duelsetup-a', 'participants', null);
+const getDuelSetupB = autocomplete('inp-duelsetup-b', 'sug-duelsetup-b', 'participants', null);
+const getDtSetupR    = autocomplete('inp-dtsetup-r',   'sug-dtsetup-r',   'participants', null);
+const getDtSetupO    = autocomplete('inp-dtsetup-o',   'sug-dtsetup-o',   'participants', null);
+const getDtSetupV    = autocomplete('inp-dtsetup-v',   'sug-dtsetup-v',   'participants', null);
+
 // ── Profile ───────────────────────────────────────────────────────────────────
 
 $('btn-participant')?.addEventListener('click', () => {
@@ -511,7 +518,7 @@ $('btn-dreamteam')?.addEventListener('click', () => {
   loadDreamTeam(r, o, v);
 });
 
-$('back-from-profile')?.addEventListener('click', () => showView('view-home'));
+$('back-from-profile')?.addEventListener('click', () => showView(_profileBackTarget));
 $('back-from-team')?.addEventListener('click', () => showView('view-home'));
 $('back-from-compare-t')?.addEventListener('click', () => showView('view-home'));
 $('back-from-duel')?.addEventListener('click', () => showView('view-home'));
@@ -520,6 +527,19 @@ $('back-from-jury')?.addEventListener('click', () => showView('view-home'));
 $('back-from-room')?.addEventListener('click', () => showView('view-home'));
 $('back-from-hub')?.addEventListener('click', () => showView('view-home'));
 $('back-from-rankings')?.addEventListener('click', () => showView('view-home'));
+$('back-from-duel-setup')?.addEventListener('click', () => showView('view-hub'));
+$('back-from-dt-setup')?.addEventListener('click', () => showView(_dtSetupBackTarget));
+
+$('btn-duelsetup-go')?.addEventListener('click', () => {
+  const a = getDuelSetupA(), b = getDuelSetupB();
+  if (!a || !b) { showError('Enter both fighter names'); return; }
+  loadDuel(a, b);
+});
+$('btn-dtsetup-go')?.addEventListener('click', () => {
+  const r = getDtSetupR(), o = getDtSetupO(), v = getDtSetupV();
+  if (!r || !o || !v) { showError('Enter all three roles'); return; }
+  loadDreamTeam(r, o, v);
+});
 
 $('btn-room')?.addEventListener('click', () => {
   const a = getRoomA(), b = getRoomB(), c = getRoomC();
@@ -614,7 +634,10 @@ function shareBtn(params, label = '🔗 Share') {
   else if (p.get('rankings') !== null) setTimeout(() => loadRankingsView(), 0);
 })();
 
-async function loadProfile(name) {
+let _profileBackTarget = 'view-home';
+
+async function loadProfile(name, backTarget = 'view-home') {
+  _profileBackTarget = backTarget;
   showView('view-profile');
   $('profile-content').innerHTML = '<div class="loader">Loading…</div>';
   try {
@@ -986,25 +1009,20 @@ function renderProfile(p) {
 // ── Competitor Hub ────────────────────────────────────────────────────────────
 
 async function loadCompetitorHub(name) {
-  // Render hub inside view-profile — always exists in every HTML version
-  showView('view-profile');
-  $('profile-content').innerHTML = '<div class="loader">Loading…</div>';
+  showView('view-hub');
+  $('hub-content').innerHTML = '<div class="loader">Loading…</div>';
   try {
     const p = await apiFetch(`/api/participant/${encodeURIComponent(name)}`);
-    $('profile-content').innerHTML = renderCompetitorHub(p);
-    $('profile-content').querySelectorAll('[data-action]').forEach(el => {
+    $('hub-content').innerHTML = renderCompetitorHub(p);
+    $('hub-content').querySelectorAll('[data-action]').forEach(el => {
       el.addEventListener('click', () => {
         const action = el.dataset.action;
         if (action === 'profile') {
-          loadProfile(p.name);
+          loadProfile(p.name, 'view-hub');
         } else if (action === 'duel') {
-          showView('view-home');
-          $('inp-card-duel-a').value = p.name;
-          setTimeout(() => $('inp-card-duel-b').focus(), 80);
+          loadDuelSetup(p.name);
         } else if (action === 'dreamteam') {
-          showView('view-home');
-          $('inp-card-dt-r').value = p.name;
-          setTimeout(() => $('inp-card-dt-o').focus(), 80);
+          loadDreamTeamSetup(p.name);
         }
       });
     });
@@ -1012,6 +1030,24 @@ async function loadCompetitorHub(name) {
     showError(err.message);
     showView('view-home');
   }
+}
+
+function loadDuelSetup(prefillName) {
+  showView('view-duel-setup');
+  $('inp-duelsetup-a').value = prefillName || '';
+  $('inp-duelsetup-b').value = '';
+  setTimeout(() => $('inp-duelsetup-b').focus(), 80);
+}
+
+let _dtSetupBackTarget = 'view-hub';
+
+function loadDreamTeamSetup(prefillR, prefillO, prefillV, backTarget = 'view-hub') {
+  _dtSetupBackTarget = backTarget;
+  showView('view-dt-setup');
+  $('inp-dtsetup-r').value = prefillR || '';
+  $('inp-dtsetup-o').value = prefillO || '';
+  $('inp-dtsetup-v').value = prefillV || '';
+  if (!prefillO) setTimeout(() => $('inp-dtsetup-o').focus(), 80);
 }
 
 function renderCompetitorHub(p) {
@@ -1521,9 +1557,14 @@ function _teamYearData(profile) {
       const avgs = Object.values(roles).filter(r => r.avg != null).map(r => r.avg);
       return avgs.length ? avgs.reduce((s, v) => s + v) / avgs.length : null;
     }).filter(v => v != null);
+    const memberZs = Object.values(yd.members).map(roles => {
+      const zs = Object.values(roles).filter(r => r.z_avg != null).map(r => r.z_avg);
+      return zs.length ? zs.reduce((s, v) => s + v) / zs.length : null;
+    }).filter(v => v != null);
     return {
       year: yd.year,
       avg: memberAvgs.length ? memberAvgs.reduce((s, v) => s + v) / memberAvgs.length : null,
+      z: memberZs.length ? memberZs.reduce((s, v) => s + v) / memberZs.length : null,
       rank: yd.final_rank?.rank ?? null,
     };
   });
@@ -1533,16 +1574,16 @@ function _teamTopMembers(profile, n = 5) {
   const best = {};
   for (const yd of profile.years_data) {
     for (const [name, roles] of Object.entries(yd.members)) {
-      const avgs = Object.values(roles).filter(r => r.avg != null).map(r => r.avg);
-      if (!avgs.length) continue;
-      const avg = avgs.reduce((s, v) => s + v) / avgs.length;
-      if (!best[name] || avg > best[name].avg) best[name] = { name, avg, years: [] };
+      const zs = Object.values(roles).filter(r => r.z_avg != null).map(r => r.z_avg);
+      if (!zs.length) continue;
+      const z = zs.reduce((s, v) => s + v) / zs.length;
+      if (!best[name] || z > best[name].z) best[name] = { name, z, years: [] };
     }
   }
   for (const yd of profile.years_data)
     for (const name of Object.keys(yd.members))
       if (best[name] && !best[name].years.includes(yd.year)) best[name].years.push(yd.year);
-  return Object.values(best).sort((a, b) => b.avg - a.avg).slice(0, n);
+  return Object.values(best).sort((a, b) => b.z - a.z).slice(0, n);
 }
 
 function renderCompareTeams(data) {
@@ -1611,7 +1652,7 @@ function renderCompareTeams(data) {
 
   const memberCard = (m) => `<div class="ct-member" data-participant="${m.name}">
     <span class="ct-member-name">${m.name}</span>
-    <span class="ct-member-avg">${m.avg.toFixed(2)}</span>
+    <span class="ct-member-avg">${m.z >= 0 ? '+' : ''}${m.z.toFixed(2)}</span>
     <span class="ct-member-years">${m.years.join(', ')}</span>
   </div>`;
 
@@ -1624,7 +1665,7 @@ function renderCompareTeams(data) {
       ${summaryHtml}
       ${recordHtml}
       <div class="ct-chart-section">
-        <div class="ct-section-title">Average score per edition</div>
+        <div class="ct-section-title">Z-score per edition</div>
         <div class="chart-card" style="padding:16px"><canvas id="chart-compare-teams" height="220"></canvas></div>
       </div>
       <div class="ct-section">
@@ -1636,11 +1677,11 @@ function renderCompareTeams(data) {
       </div>
       <div class="ct-members-grid">
         <div class="ct-members-col">
-          <div class="ct-section-title">${flagA} ${a.team} — top scorers</div>
+          <div class="ct-section-title">${flagA} ${a.team} — top performances</div>
           ${topA.map(memberCard).join('')}
         </div>
         <div class="ct-members-col">
-          <div class="ct-section-title">${flagB} ${b.team} — top scorers</div>
+          <div class="ct-section-title">${flagB} ${b.team} — top performances</div>
           ${topB.map(memberCard).join('')}
         </div>
       </div>
@@ -1657,8 +1698,8 @@ function renderCompareTeamsChart(data) {
   const ydA = _teamYearData(a), ydB = _teamYearData(b);
   const flagA = countryFlag(a.team) || '', flagB = countryFlag(b.team) || '';
   const allYears = [...new Set([...ydA.map(y => y.year), ...ydB.map(y => y.year)])].sort();
-  const mapA = Object.fromEntries(ydA.map(y => [y.year, y.avg]));
-  const mapB = Object.fromEntries(ydB.map(y => [y.year, y.avg]));
+  const mapA = Object.fromEntries(ydA.map(y => [y.year, y.z]));
+  const mapB = Object.fromEntries(ydB.map(y => [y.year, y.z]));
 
   const gridColor = 'rgba(46,51,80,.6)', textColor = '#7a7f9a';
   new C(el, {
@@ -1684,8 +1725,8 @@ function renderCompareTeamsChart(data) {
       responsive: true,
       scales: {
         x: { ticks: { color: textColor }, grid: { color: gridColor } },
-        y: { min: 4, ticks: { color: textColor }, grid: { color: gridColor },
-             title: { display: true, text: 'Avg score', color: textColor, font: { size: 11 } } },
+        y: { ticks: { color: textColor }, grid: { color: gridColor },
+             title: { display: true, text: 'Z-score', color: textColor, font: { size: 11 } } },
       },
       plugins: {
         legend: { labels: { color: textColor, font: { size: 12 } } },
@@ -1988,18 +2029,6 @@ function renderDreamTeam(reporter, opponent, reviewer, teamRanks) {
     fieldSize = zList.length;
   }
 
-  // Tier label based on projected rank percentile
-  function tierLabel(rank, total) {
-    if (!rank || !total) return { text: 'Unranked', color: 'var(--muted)', bg: 'var(--surface)' };
-    const pct = rank / total;
-    if (pct <= 0.1)  return { text: 'Tournament Favorites 🥇', color: '#ffd700', bg: 'rgba(255,215,0,.12)' };
-    if (pct <= 0.25) return { text: 'Strong Contenders 💪',    color: 'var(--green)',  bg: 'rgba(0,184,148,.12)' };
-    if (pct <= 0.5)  return { text: 'Mid-Table Challengers ⚔', color: 'var(--accent)', bg: 'rgba(91,141,238,.12)' };
-    if (pct <= 0.75) return { text: 'Fighting for Points',      color: 'var(--muted)',  bg: 'var(--surface)' };
-    return { text: 'Building Experience 📈',                    color: 'var(--muted)',  bg: 'var(--surface)' };
-  }
-  const tier = tierLabel(projRank, fieldSize);
-
   // History bar: marker at (1 - rank/total) percent
   const histPct = (projRank && fieldSize) ? Math.max(2, Math.min(98, (1 - projRank / fieldSize) * 100)) : null;
 
@@ -2036,19 +2065,19 @@ function renderDreamTeam(reporter, opponent, reviewer, teamRanks) {
       </div>
       <div class="dt-hist-labels"><span>Weakest</span><span>Strongest</span></div>
     </div>` : ''}
-    <div class="dt-tier-badge" style="background:${tier.bg};color:${tier.color}">${tier.text}</div>
   </div>`;
 
   const dtShareBtn = shareBtn({ dt: reporter.name, dto: opponent.name, dtv: reviewer.name }, '🔗 Share Dream Team');
-  const actionRow = `<div class="dt-actions">
+  const rN = reporter.name.replace(/'/g, "\\'"), oN = opponent.name.replace(/'/g, "\\'"), vN = reviewer.name.replace(/'/g, "\\'");
+  const topActions = `<div class="dt-top-actions">
     ${dtShareBtn}
-    <button class="mode-link-btn" onclick="$('inp-dt-r').value='';$('inp-dt-o').value='';$('inp-dt-v').value='';showView('view-home');document.querySelector('[data-tab=dreamteam]').click()">↩ Change members</button>
-    <button class="mode-link-btn" onclick="startDuelFrom('${reporter.name.replace(/'/g,"\\'")}')">⚔ Duel someone</button>
+    <button class="mode-link-btn" onclick="loadDreamTeamSetup('${rN}','${oN}','${vN}','view-dreamteam')">↩ Change members</button>
+    <button class="mode-link-btn" onclick="document.getElementById('dt-vs-anchor').scrollIntoView({behavior:'smooth'});setTimeout(()=>$('inp-dtvs-r').focus(),300)">⚔ Challenge another team</button>
   </div>`;
 
   // Dream Team vs Dream Team challenge section
   const vsSection = `
-    <div class="dt-vs-section">
+    <div class="dt-vs-section" id="dt-vs-anchor">
       <div class="section-title" style="margin-top:24px">Challenge another Dream Team</div>
       <div class="dt-inputs" id="dt-vs-inputs">
         <div class="dt-role-group">
@@ -2080,9 +2109,9 @@ function renderDreamTeam(reporter, opponent, reviewer, teamRanks) {
   return `<div>
     <div class="dt-headline">Dream Team</div>
     <div class="dt-subhead">${reporter.name} · ${opponent.name} · ${reviewer.name}</div>
+    ${topActions}
     <div class="dt-roster-grid">${memberCards}</div>
     ${projectionCard}
-    ${actionRow}
     ${vsSection}
   </div>`;
 }
@@ -3514,12 +3543,12 @@ function renderChronoHistory(matchups) {
 function renderThreeTeamRoom(teams, matchups) {
   const perms = computeRoomPermutations(teams, matchups);
   const top = perms[0];
-  const podiumOrder = [...top.order].reverse(); // left-to-right: 3rd, 2nd, 1st (1st on the right)
+  const podiumOrder = top.order; // left-to-right: 1st, 2nd, 3rd (1st on the left)
 
   const podiumHtml = `
     <div class="rm-podium">
       ${podiumOrder.map((team, idx) => {
-        const rank = 3 - idx;
+        const rank = idx + 1;
         const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉';
         const sizeCls = rank === 1 ? 'rm-podium-1' : rank === 2 ? 'rm-podium-2' : 'rm-podium-3';
         return `<div class="rm-podium-spot ${sizeCls}" data-team="${team}" style="cursor:pointer">

@@ -45,6 +45,7 @@ body {
 
 .search-row, .compare-inputs { display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap; }
 .autocomplete-wrap { position: relative; flex: 1 1 200px; }
+.mode-card-coach .autocomplete-wrap { position: relative; flex: 1 1 80px; }
 
 input[type="text"] {
   width: 100%;
@@ -544,7 +545,7 @@ input::placeholder { color: var(--muted); }
 .mode-card-stats { border-color: rgba(45,138,78,.3); }
 .mode-card-stats:hover { border-color: rgba(45,138,78,.5); }
 .stats-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-.stats-btns .btn-primary { flex: 1; min-width: 140px; }
+.stats-btns .btn-primary { flex: 1; min-width: 140px; height: 182.53px; display: flex; align-items: center; justify-content: center; text-align: center; }
 .btn-primary-rankings { background: linear-gradient(135deg, #1e6e3e, #2d8a4e) !important; }
 
 /* Primary action row (search + button side by side) */
@@ -579,7 +580,25 @@ input::placeholder { color: var(--muted); }
 .btn-sub-duel { border-color: rgba(255,107,107,.35); color: var(--red); }
 .btn-sub-duel:hover { background: rgba(255,107,107,.08); border-color: var(--red); }
 
-.btn-primary-coach { background: linear-gradient(135deg, #00b894, #00cec9) !important; }
+.mode-link-btn {
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: .8rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s;
+}
+.mode-link-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(45,138,78,.06); }
+
+.dt-top-actions { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+
+.btn-primary-coach { background: linear-gradient(135deg, #00b894, #00cec9) !important; min-height: 74px; display: flex; align-items: center; justify-content: center; }
 .btn-primary-room { background: linear-gradient(135deg, #f0908d, var(--red)) !important; color: #fff !important; font-weight: 700; }
 .btn-primary-jury  { background: linear-gradient(135deg, #6c5ce7, #a29bfe) !important; }
 
@@ -710,6 +729,15 @@ input::placeholder { color: var(--muted); }
 .room-inputs { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-start; }
 .room-inputs .autocomplete-wrap { flex: 1 1 180px; }
 
+/* ── Big-input setup screens (Duel / Dream Team, from competitor hub) ───────── */
+.big-setup-title { text-align: center; margin: 8px 0 28px; font-size: 1.5rem; }
+.big-setup-form { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; max-width: 720px; margin: 0 auto 24px; }
+.big-input-wrap { flex: 1 1 220px; }
+.big-input { width: 100%; padding: 18px 20px; font-size: 1.15rem; border-radius: var(--radius); border: 1.5px solid var(--border); background: var(--card); color: var(--text); box-sizing: border-box; }
+.big-input:focus { border-color: var(--accent); outline: none; }
+.big-setup-vs { color: var(--muted); font-weight: 700; font-size: 1.1rem; }
+.big-go-btn { display: block; margin: 0 auto; padding: 16px 56px; font-size: 1.15rem; }
+
 .rm-header { text-align: center; margin-bottom: 28px; }
 .rm-header h2 { font-size: 1.6rem; margin-bottom: 0; }
 .rm-header-top { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 12px; }
@@ -728,9 +756,9 @@ input::placeholder { color: var(--muted); }
 .rm-podium-medal { font-size: 1.4rem; }
 .rm-podium-flag { font-size: 1.6rem; margin: 4px 0; }
 .rm-podium-name { font-size: 0.82rem; font-weight: 700; color: var(--text); white-space: nowrap; }
-.rm-podium-1 { padding-top: 24px; border-color: #ffd700; box-shadow: 0 -2px 0 #ffd700 inset; order: 3; }
+.rm-podium-1 { padding-top: 24px; border-color: #ffd700; box-shadow: 0 -2px 0 #ffd700 inset; order: 1; }
 .rm-podium-2 { padding-top: 14px; border-color: #c0c0c0; box-shadow: 0 -2px 0 #c0c0c0 inset; order: 2; }
-.rm-podium-3 { padding-top: 6px; border-color: #cd7f32; box-shadow: 0 -2px 0 #cd7f32 inset; order: 1; }
+.rm-podium-3 { padding-top: 6px; border-color: #cd7f32; box-shadow: 0 -2px 0 #cd7f32 inset; order: 3; }
 .rm-podium-prob { text-align: center; font-size: 0.82rem; color: var(--muted); font-weight: 600; }
 
 .rm-pairwise-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }

@@ -372,6 +372,45 @@
     <div id="hub-content"></div>
   </div>
 
+  <!-- DUEL SETUP (big inputs) -->
+  <div id="view-duel-setup" class="view">
+    <button class="back-btn" id="back-from-duel-setup">← Back</button>
+    <h2 class="big-setup-title">⚔ Set up your Duel</h2>
+    <div class="big-setup-form">
+      <div class="autocomplete-wrap big-input-wrap">
+        <input id="inp-duelsetup-a" type="text" placeholder="Fighter A…" autocomplete="off" class="big-input" />
+        <ul id="sug-duelsetup-a" class="suggestions hidden"></ul>
+      </div>
+      <span class="big-setup-vs">vs</span>
+      <div class="autocomplete-wrap big-input-wrap">
+        <input id="inp-duelsetup-b" type="text" placeholder="Fighter B…" autocomplete="off" class="big-input" />
+        <ul id="sug-duelsetup-b" class="suggestions hidden"></ul>
+      </div>
+    </div>
+    <button id="btn-duelsetup-go" class="btn-primary btn-primary-room big-go-btn">Fight! ⚔</button>
+  </div>
+
+  <!-- DREAM TEAM SETUP (big inputs) -->
+  <div id="view-dt-setup" class="view">
+    <button class="back-btn" id="back-from-dt-setup">← Back</button>
+    <h2 class="big-setup-title">🤝 Assemble your Dream Team</h2>
+    <div class="big-setup-form">
+      <div class="autocomplete-wrap big-input-wrap">
+        <input id="inp-dtsetup-r" type="text" placeholder="Reporter…" autocomplete="off" class="big-input" />
+        <ul id="sug-dtsetup-r" class="suggestions hidden"></ul>
+      </div>
+      <div class="autocomplete-wrap big-input-wrap">
+        <input id="inp-dtsetup-o" type="text" placeholder="Opponent…" autocomplete="off" class="big-input" />
+        <ul id="sug-dtsetup-o" class="suggestions hidden"></ul>
+      </div>
+      <div class="autocomplete-wrap big-input-wrap">
+        <input id="inp-dtsetup-v" type="text" placeholder="Reviewer…" autocomplete="off" class="big-input" />
+        <ul id="sug-dtsetup-v" class="suggestions hidden"></ul>
+      </div>
+    </div>
+    <button id="btn-dtsetup-go" class="btn-primary btn-primary-coach big-go-btn">Assemble ⚡</button>
+  </div>
+
   <!-- JURY / PROBLEM ANALYTICS -->
   <div id="view-jury" class="view view-wide">
     <button class="back-btn" id="back-from-jury">← Back</button>
