@@ -47,15 +47,20 @@
   }
 })();
 
-// Featured "Who Will Win?" card: live countdown + schedule highlighting for IYPT 2026 (Switzerland, 5-12 Jul)
+// Featured "Simulate a Round" card: live countdown + schedule highlighting for IYPT 2026 (Switzerland, 5-12 Jul)
 (function initFeaturedSchedule() {
   const countdown = document.getElementById('iypt-countdown');
   const strip = document.getElementById('iypt-schedule');
+  const roomInputs = document.getElementById('room-inputs');
+  const roomBtn = document.getElementById('btn-hero-room');
+  const lockedBanner = document.getElementById('room-locked-banner');
+  const roomCard = document.querySelector('.mode-card-room');
   if (!countdown && !strip) return;
 
   const pad = n => String(n).padStart(2, '0');
   const todayStr = (() => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; })();
   const TOURNEY_START = '2026-07-05';
+  const FIGHT_START = '2026-07-06'; // first actual fight (R1) — Simulate a Round unlocks here
   const TOURNEY_END = '2026-07-12';
 
   if (strip) {
@@ -67,13 +72,27 @@
     });
   }
 
+  const isLocked = todayStr < FIGHT_START;
+  if (roomInputs && roomBtn && lockedBanner) {
+    roomInputs.classList.toggle('hidden', isLocked);
+    roomBtn.classList.toggle('hidden', isLocked);
+    lockedBanner.classList.toggle('hidden', !isLocked);
+  }
+  if (roomCard) roomCard.classList.toggle('is-locked', isLocked);
+
   if (countdown) {
     if (todayStr < TOURNEY_START) {
       const msPerDay = 86400000;
       const today = new Date(); today.setHours(0, 0, 0, 0);
       const start = new Date(TOURNEY_START + 'T00:00:00');
       const days = Math.round((start - today) / msPerDay);
-      countdown.textContent = `🚀 Starts in ${days} day${days === 1 ? '' : 's'}`;
+      countdown.textContent = `🚀 Opening ceremony in ${days} day${days === 1 ? '' : 's'}`;
+    } else if (isLocked) {
+      const msPerDay = 86400000;
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const start = new Date(FIGHT_START + 'T00:00:00');
+      const days = Math.round((start - today) / msPerDay);
+      countdown.textContent = `🥊 First fight in ${days} day${days === 1 ? '' : 's'}`;
     } else if (todayStr <= TOURNEY_END) {
       countdown.textContent = `🔴 Live now in Switzerland!`;
     } else {
@@ -196,6 +215,12 @@ async function _staticFetch(path) {
     const r = await fetch(`data/teams/${slugify(decodeURIComponent(teamIntelMatch[1]))}.json`);
     if (!r.ok) throw new Error('Team not found');
     return (await r.json()).intel;
+  }
+  const teamTrendMatch = rawPath.match(/^\/api\/team\/(.+)\/trend$/);
+  if (teamTrendMatch) {
+    const r = await fetch(`data/teams/${slugify(decodeURIComponent(teamTrendMatch[1]))}.json`);
+    if (!r.ok) throw new Error('Team not found');
+    return { trend: (await r.json()).trend };
   }
   const teamMatch = rawPath.match(/^\/api\/team\/(.+)$/);
   if (teamMatch) {
@@ -498,14 +523,14 @@ $('back-from-rankings')?.addEventListener('click', () => showView('view-home'));
 
 $('btn-room')?.addEventListener('click', () => {
   const a = getRoomA(), b = getRoomB(), c = getRoomC();
-  if (!a || !b) { showError('Enter at least 2 teams'); return; }
-  loadRoomMatchup([a, b, ...(c ? [c] : [])]);
+  if (!a || !b || !c) { showError('Enter all 3 teams'); return; }
+  loadRoomMatchup([a, b, c]);
 });
 
 $('btn-hero-room')?.addEventListener('click', () => {
   const a = getHeroRoomA(), b = getHeroRoomB(), c = getHeroRoomC();
-  if (!a || !b) { showError('Enter at least 2 teams'); return; }
-  loadRoomMatchup([a, b, ...(c ? [c] : [])]);
+  if (!a || !b || !c) { showError('Enter all 3 teams'); return; }
+  loadRoomMatchup([a, b, c]);
 });
 
 // "I competed" card: Duel sub-row
@@ -1042,12 +1067,13 @@ async function loadTeam(name) {
   showView('view-team');
   $('team-content').innerHTML = '<div class="loader">Loading…</div>';
   try {
-    const [data, intel, peers] = await Promise.all([
+    const [data, intel, peers, trendData] = await Promise.all([
       apiFetch(`/api/team/${encodeURIComponent(name)}`),
       apiFetch(`/api/team/${encodeURIComponent(name)}/intelligence`).catch(() => null),
       apiFetch(`/api/team/${encodeURIComponent(name)}/peers`).catch(() => null),
+      apiFetch(`/api/team/${encodeURIComponent(name)}/trend`).catch(() => null),
     ]);
-    $('team-content').innerHTML = renderTeam(data, intel, peers);
+    $('team-content').innerHTML = renderTeam(data, intel, peers, trendData?.trend ?? null);
     bindTeamContent(data, peers);
     // Position calculator: wire after render
     if (peers) {
@@ -1097,7 +1123,7 @@ const _CAT_COLORS = {
   'Quantum & Modern': '#00cec9', 'Other':            '#636e72',
 };
 
-function renderTeam(t, intel, peers) {
+function renderTeam(t, intel, peers, trend) {
   const roles = ['Reporter', 'Opponent', 'Reviewer'];
 
   const yearSections = t.years_data.map(y => {
@@ -1127,7 +1153,7 @@ function renderTeam(t, intel, peers) {
   const teamAvatarContent = teamFlag || t.team.slice(0,2).toUpperCase();
   const teamAvatarStyle = teamFlag ? 'background:var(--surface);font-size:1.8rem' : 'font-size:1.1rem';
 
-  const prepSection = renderTeamPrep(t, peers);
+  const prepSection = renderTeamPrep(t, peers, trend);
   const intelInner = renderTeamIntelligence(intel, t.years, '');
 
   return `
@@ -1189,7 +1215,7 @@ function renderPosCalcResult(peers, n) {
   </div>`;
 }
 
-function renderTeamPrep(t, peers) {
+function renderTeamPrep(t, peers, trend) {
   const roles = ['Reporter', 'Opponent', 'Reviewer'];
   const roleColors = { Reporter: 'var(--accent)', Opponent: 'var(--accent2)', Reviewer: 'var(--green)' };
 
@@ -1332,8 +1358,32 @@ function renderTeamPrep(t, peers) {
     </div>`;
   }
 
+  let trendHtml;
+  if (trend != null) {
+    const absT = Math.abs(trend);
+    let label, icon, col;
+    if (absT < 0.01) { label = 'Stable'; icon = '➡️'; col = 'var(--muted)'; }
+    else if (trend > 0) { label = 'Improving'; icon = '📈'; col = 'var(--green)'; }
+    else { label = 'Declining'; icon = '📉'; col = 'var(--red)'; }
+    trendHtml = `<div class="prep-trend-card">
+      <div class="prep-section-label">Trend</div>
+      <div class="prep-trend-row">
+        <span class="prep-trend-icon">${icon}</span>
+        <span class="prep-trend-label" style="color:${col}">${label}</span>
+        <span class="prep-trend-val">${trend >= 0 ? '+' : ''}${trend.toFixed(3)} z/year</span>
+      </div>
+      <div class="prep-trend-note">Weighted regression across years with team data — recent years count more. Your own trajectory only, not compared to other teams.</div>
+    </div>`;
+  } else {
+    trendHtml = `<div class="prep-trend-card prep-trend-card-muted">
+      <div class="prep-section-label">Trend</div>
+      <div style="color:var(--muted);font-size:.85rem">Needs at least 3 years of data on record to show a trend.</div>
+    </div>`;
+  }
+
   return `<div class="prep-dashboard">
     <div class="prep-header">📊 Scouting Report — ${lastYear.year}</div>
+    ${trendHtml}
     <div class="prep-grid">
       <div>
         <div class="prep-section-label">Role Performance (${lastYear.year})</div>
@@ -3189,37 +3239,100 @@ async function loadRoomMatchup(teams) {
   }
 }
 
+// ── Room prediction helpers ───────────────────────────────────────────────────
+
+function rmRankBadge(rank) {
+  if (rank == null) return '<span class="rm-rank rm-rank-na">—</span>';
+  const cls = rank === 1 ? 'rm-rank-1' : rank === 2 ? 'rm-rank-2' : 'rm-rank-3';
+  const label = rank === 1 ? '1st' : rank === 2 ? '2nd' : '3rd';
+  return `<span class="rm-rank ${cls}">${label}</span>`;
+}
+
+function rmTeamChip(name) {
+  const flag = countryFlag(name) || '';
+  return `<span class="rm-team-chip" data-team="${name}" style="cursor:pointer">${flag} ${name}</span>`;
+}
+
+function rmConfidenceLabel(n) {
+  if (n === 0) return { text: 'No historical data', cls: 'rm-conf-none' };
+  if (n <= 2)  return { text: `Low confidence · ${n} fight${n > 1 ? 's' : ''}`, cls: 'rm-conf-low' };
+  if (n <= 4)  return { text: `Moderate confidence · ${n} fights`, cls: 'rm-conf-mid' };
+  return { text: `High confidence · ${n} fights`, cls: 'rm-conf-high' };
+}
+
+// Bradley-Terry strength fit (least squares, sum-zero) + Plackett-Luce permutation odds.
+// Handles missing/inconsistent (intransitive) pairwise data gracefully — no special-casing needed.
+function rmLogit(p) { const c = Math.min(Math.max(p, 1e-6), 1 - 1e-6); return Math.log(c / (1 - c)); }
+function rmSigmoid(x) { return 1 / (1 + Math.exp(-x)); }
+
+function computeRoomPermutations(teams, matchups) {
+  const findP = (x, y) => {
+    const m = matchups.find(mm => (mm.team_a === x && mm.team_b === y) || (mm.team_a === y && mm.team_b === x));
+    if (!m) return 0.5;
+    return m.team_a === x ? (m.p_a_wins ?? 0.5) : (m.p_b_wins ?? 0.5);
+  };
+  const [A, B, C] = teams;
+  const L_AB = rmLogit(findP(A, B)), L_AC = rmLogit(findP(A, C)), L_BC = rmLogit(findP(B, C));
+  // Least-squares solution for strengths under s_A+s_B+s_C=0 (closed form, derived from the 3 pairwise logits)
+  const sA = (L_AB + L_AC) / 3;
+  const sB = (-L_AB + L_BC) / 3;
+  const sC = (-L_AC - L_BC) / 3;
+  const wA = Math.exp(sA), wB = Math.exp(sB), wC = Math.exp(sC);
+  const W = wA + wB + wC;
+  const perms = [
+    { order: [A, B, C], p: (wA / W) * (wB / (wB + wC)) },
+    { order: [A, C, B], p: (wA / W) * (wC / (wB + wC)) },
+    { order: [B, A, C], p: (wB / W) * (wA / (wA + wC)) },
+    { order: [B, C, A], p: (wB / W) * (wC / (wA + wC)) },
+    { order: [C, A, B], p: (wC / W) * (wA / (wA + wB)) },
+    { order: [C, B, A], p: (wC / W) * (wB / (wA + wB)) },
+  ];
+  perms.sort((x, y) => y.p - x.p);
+  return perms;
+}
+
+function rmCombineRoleWins(teams, matchups) {
+  const ROLES = ['Reporter', 'Opponent', 'Reviewer'];
+  const matrix = {};
+  teams.forEach(t => { matrix[t] = { Reporter: 0, Opponent: 0, Reviewer: 0 }; });
+  matchups.forEach(m => {
+    if (!m.role_wins) return;
+    Object.entries(m.role_wins).forEach(([team, roles]) => {
+      if (!matrix[team]) return;
+      ROLES.forEach(r => { matrix[team][r] += (roles[r] || 0); });
+    });
+  });
+  return matrix;
+}
+
+function rmDetectAllThreeMet(teams, matchups) {
+  for (const m of matchups) {
+    const other = teams.find(t => t !== m.team_a && t !== m.team_b);
+    if (!other) continue;
+    if (m.encounters.some(e => e.third_team === other)) return true;
+  }
+  return false;
+}
+
 function renderRoomMatchup(data) {
   const { teams, matchups } = data;
-
-  const rankBadge = (rank) => {
-    if (rank == null) return '<span class="rm-rank rm-rank-na">—</span>';
-    const cls = rank === 1 ? 'rm-rank-1' : rank === 2 ? 'rm-rank-2' : 'rm-rank-3';
-    const label = rank === 1 ? '1st' : rank === 2 ? '2nd' : '3rd';
-    return `<span class="rm-rank ${cls}">${label}</span>`;
-  };
-
-  const teamChip = (name) => {
-    const flag = countryFlag(name) || '';
-    return `<span class="rm-team-chip" data-team="${name}" style="cursor:pointer">${flag} ${name}</span>`;
-  };
-
-  const confidenceLabel = (n) => {
-    if (n === 0) return { text: 'No historical data', cls: 'rm-conf-none' };
-    if (n <= 2)  return { text: `Low confidence · ${n} fight${n > 1 ? 's' : ''}`, cls: 'rm-conf-low' };
-    if (n <= 4)  return { text: `Moderate confidence · ${n} fights`, cls: 'rm-conf-mid' };
-    return { text: `High confidence · ${n} fights`, cls: 'rm-conf-high' };
-  };
+  const rankBadge = rmRankBadge, teamChip = rmTeamChip, confidenceLabel = rmConfidenceLabel;
 
   const roomHeader = `
     <div class="rm-header">
-      <h2>🎲 Room Prediction</h2>
+      <div class="rm-header-top">
+        <h2>🎲 Most Likely Outcome</h2>
+        ${shareBtn({ room: teams.join(',') })}
+      </div>
       <div class="rm-teams-row">${teams.map(teamChip).join('<span class="rm-sep">+</span>')}</div>
-      <div class="share-row" style="margin-top:10px">${shareBtn({ room: teams.join(',') })}</div>
     </div>`;
 
   if (!matchups.length) {
     return roomHeader + '<div class="rm-empty">No historical encounters found between these teams.</div>';
+  }
+
+  if (teams.length === 3 && matchups.length === 3) {
+    return roomHeader + renderThreeTeamRoom(teams, matchups);
   }
 
   const matchupCards = matchups.map(m => {
@@ -3329,4 +3442,122 @@ function renderRoomMatchup(data) {
   }).join('');
 
   return roomHeader + `<div class="rm-cards">${matchupCards}</div>`;
+}
+
+function renderPairwiseMini(m) {
+  const flagA = countryFlag(m.team_a) || '', flagB = countryFlag(m.team_b) || '';
+  const pA = m.p_a_wins ?? 0.5, pB = m.p_b_wins ?? 0.5;
+  const pctA = Math.round(pA * 100), pctB = Math.round(pB * 100);
+  const favA = pctA > pctB;
+  return `<div class="rm-pw-mini">
+    <div class="rm-pw-mini-row">
+      <span class="rm-pw-mini-team ${favA ? 'rm-pw-fav' : ''}" data-team="${m.team_a}" style="cursor:pointer">${flagA} ${pctA}%</span>
+      <span class="rm-pw-mini-vs">vs</span>
+      <span class="rm-pw-mini-team ${!favA ? 'rm-pw-fav' : ''}" data-team="${m.team_b}" style="cursor:pointer">${pctB}% ${flagB}</span>
+    </div>
+    <div class="rm-pw-mini-bar"><div class="rm-pw-mini-bar-a" style="width:${pctA}%"></div><div class="rm-pw-mini-bar-b" style="width:${pctB}%"></div></div>
+    <div class="rm-pw-mini-n">${m.n_encounters} fight${m.n_encounters !== 1 ? 's' : ''}</div>
+  </div>`;
+}
+
+function renderRoleMatrix(teams, matrix) {
+  const ROLES = ['Reporter', 'Opponent', 'Reviewer'];
+  const maxByRole = {};
+  ROLES.forEach(r => { maxByRole[r] = Math.max(...teams.map(t => (matrix[t] && matrix[t][r]) || 0)); });
+  const rows = teams.map(t => `
+    <tr>
+      <td>${countryFlag(t) || ''} ${t}</td>
+      ${ROLES.map(r => {
+        const v = (matrix[t] && matrix[t][r]) || 0;
+        const isMax = v > 0 && v === maxByRole[r];
+        return `<td class="${isMax ? 'rm-role-max' : ''}">${v}</td>`;
+      }).join('')}
+    </tr>`).join('');
+  return `<div class="rm-role-matrix">
+    <table class="rm-table">
+      <thead><tr><th>Team</th><th>Reporter</th><th>Opponent</th><th>Reviewer</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <p class="rm-note">Per-role win count across every shared fight in history — highlighted = best in that role.</p>
+  </div>`;
+}
+
+function renderChronoHistory(matchups) {
+  const seen = new Set();
+  const rows = [];
+  matchups.forEach(m => {
+    m.encounters.forEach(e => {
+      const key = `${e.year}-${e.round}-${e.fight_room}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      rows.push({ ...e, team_a: m.team_a, team_b: m.team_b });
+    });
+  });
+  if (!rows.length) return '<div class="rm-no-data">No shared fights yet.</div>';
+  rows.sort((a, b) => (a.year || 0) - (b.year || 0) || a.round - b.round);
+  const tableRows = rows.map(e => {
+    const thirdFlag = e.third_team ? (countryFlag(e.third_team) || '') : '';
+    return `<tr>
+      <td>${e.year}</td>
+      <td>R${e.round} · ${e.fight_room || '?'}</td>
+      <td>${countryFlag(e.team_a) || ''} ${e.team_a} ${rmRankBadge(e.team_a_rank)}</td>
+      <td>${countryFlag(e.team_b) || ''} ${e.team_b} ${rmRankBadge(e.team_b_rank)}</td>
+      <td class="rm-third">${e.third_team ? `${thirdFlag} ${e.third_team} ${rmRankBadge(e.third_rank)}` : '—'}</td>
+    </tr>`;
+  }).join('');
+  return `<div class="rm-table-wrap"><table class="rm-table">
+    <thead><tr><th>Year</th><th>Round · Room</th><th>Team</th><th>Team</th><th>3rd team</th></tr></thead>
+    <tbody>${tableRows}</tbody>
+  </table></div>`;
+}
+
+function renderThreeTeamRoom(teams, matchups) {
+  const perms = computeRoomPermutations(teams, matchups);
+  const top = perms[0];
+  const podiumOrder = [...top.order].reverse(); // left-to-right: 3rd, 2nd, 1st (1st on the right)
+
+  const podiumHtml = `
+    <div class="rm-podium">
+      ${podiumOrder.map((team, idx) => {
+        const rank = 3 - idx;
+        const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉';
+        const sizeCls = rank === 1 ? 'rm-podium-1' : rank === 2 ? 'rm-podium-2' : 'rm-podium-3';
+        return `<div class="rm-podium-spot ${sizeCls}" data-team="${team}" style="cursor:pointer">
+          <div class="rm-podium-medal">${medal}</div>
+          <div class="rm-podium-flag">${countryFlag(team) || ''}</div>
+          <div class="rm-podium-name">${team}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="rm-podium-prob">Most likely outcome · ${(top.p * 100).toFixed(1)}% probability</div>`;
+
+  const pairwiseHtml = `<div class="rm-pairwise-row">${matchups.map(renderPairwiseMini).join('')}</div>`;
+
+  const maxP = perms[0].p;
+  const oddsHtml = `<div class="rm-odds-grid">
+    ${perms.map((perm, i) => {
+      const pct = perm.p * 100;
+      const label = perm.order.map(t => `${countryFlag(t) || ''} ${t.split(' ')[0]}`).join(' → ');
+      return `<div class="rm-odds-row ${i === 0 ? 'rm-odds-row-top' : ''}">
+        <div class="rm-odds-label">${label}</div>
+        <div class="rm-odds-bar-track"><div class="rm-odds-bar" style="width:${(pct / maxP * 100).toFixed(1)}%"></div></div>
+        <div class="rm-odds-pct">${pct.toFixed(1)}%</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+
+  const roleMatrix = rmCombineRoleWins(teams, matchups);
+  const allThreeMet = rmDetectAllThreeMet(teams, matchups);
+  const historyHtml = `
+    <details class="rm-history">
+      <summary class="rm-history-toggle">Fight history &amp; role breakdown</summary>
+      ${allThreeMet ? '<div class="rm-easter-egg">✨ Rare! These three have all shared a room before.</div>' : ''}
+      ${renderRoleMatrix(teams, roleMatrix)}
+      <details class="rm-history rm-history-nested">
+        <summary class="rm-history-toggle">Full chronological list</summary>
+        ${renderChronoHistory(matchups)}
+      </details>
+    </details>`;
+
+  return `<div class="rm-3team">${podiumHtml}${pairwiseHtml}${oddsHtml}${historyHtml}</div>`;
 }

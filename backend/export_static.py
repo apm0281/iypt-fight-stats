@@ -90,10 +90,12 @@ def main():
             continue
         peers = queries.get_team_peers(team_name)
         intel = queries.get_team_problem_intelligence(team_name)
+        trend = queries.get_team_trend(team_name)
         write(f"teams/{slug(team_name)}.json", {
             "profile": profile,
             "peers": peers,
             "intel": intel,
+            "trend": round(trend, 4) if trend is not None else None,
         })
         search_index_t.append({
             "name": team_name,

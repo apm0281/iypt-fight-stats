@@ -89,6 +89,11 @@ def team_intelligence(name: str, min_year: Optional[int] = Query(None)):
     return result
 
 
+@app.get("/api/team/{name}/trend")
+def team_trend(name: str):
+    return {"trend": queries.get_team_trend(name)}
+
+
 @app.get("/api/analytics/problems")
 def analytics_problems(year: Optional[int] = Query(None), min_year: Optional[int] = Query(None)):
     result = queries.get_problem_analytics(min_year=min_year, exact_year=year)

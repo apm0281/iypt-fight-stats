@@ -3,6 +3,7 @@ Query helpers that build profile and comparison data from the database.
 """
 
 import json
+import math
 from database import get_conn, normalize_name, update_participant_social
 
 
@@ -26,6 +27,117 @@ def _get_global_role_means() -> dict[str, float]:
     conn.close()
     _ROLE_MEANS_CACHE = {r["role"]: r["mean_z"] for r in rows}
     return _ROLE_MEANS_CACHE
+
+
+# ── Team trend (year-over-year improving/declining) ──────────────────────────
+
+def _team_year_z_series(team_name: str) -> list[tuple[int, float]]:
+    """Per-year average z_avg_score for a team, across all members/roles/fights
+    that year (the same granular per-performance z-score used elsewhere)."""
+    conn = get_conn()
+    rows = conn.execute(
+        """SELECT t.year, AVG(pf.z_avg_score) AS avg_z
+           FROM performances pf
+           JOIN tournaments t ON t.id = pf.tournament_id
+           WHERE pf.team_name = ? AND pf.z_avg_score IS NOT NULL
+           GROUP BY t.year
+           ORDER BY t.year""",
+        (team_name,),
+    ).fetchall()
+    conn.close()
+    return [(r["year"], r["avg_z"]) for r in rows if r["avg_z"] is not None]
+
+
+def _weighted_slope(points: list[tuple[int, float]], ref_year: int, half_life: float = 2.0) -> float | None:
+    """Weighted least-squares slope (z-score change per year). Weight decays
+    exponentially with distance from ref_year (half_life years = weight halves).
+    Gaps between years are fine. Returns None with fewer than 3 data points."""
+    if len(points) < 3:
+        return None
+    decay = math.log(2) / half_life
+    weights = [math.exp(-decay * (ref_year - yr)) for yr, _ in points]
+    sw = sum(weights)
+    mean_x = sum(w * yr for w, (yr, _z) in zip(weights, points)) / sw
+    mean_y = sum(w * z for w, (_yr, z) in zip(weights, points)) / sw
+    num = sum(w * (yr - mean_x) * (z - mean_y) for w, (yr, z) in zip(weights, points))
+    den = sum(w * (yr - mean_x) ** 2 for w, (yr, _z) in zip(weights, points))
+    if den == 0:
+        return None
+    return num / den
+
+
+def get_team_trend(team_name: str, ref_year: int | None = None) -> float | None:
+    """Slope of the team's weighted-regression z-score trend (z-score change per
+    year). None if the team has fewer than 3 years of data."""
+    if ref_year is None:
+        ref_year = max(get_available_years())
+    return _weighted_slope(_team_year_z_series(team_name), ref_year)
+
+
+_ALL_TRENDS_CACHE: dict[str, float] | None = None
+_TREND_STD_CACHE: float | None = None
+
+
+def _get_all_team_trends() -> dict[str, float]:
+    """Trend value for every team with enough data. Cached — this is the
+    population used to judge how 'significant' a trend gap between two teams is."""
+    global _ALL_TRENDS_CACHE
+    if _ALL_TRENDS_CACHE is not None:
+        return _ALL_TRENDS_CACHE
+    conn = get_conn()
+    rows = conn.execute("SELECT DISTINCT team_name FROM performances").fetchall()
+    conn.close()
+    ref_year = max(get_available_years())
+    trends = {}
+    for r in rows:
+        t = get_team_trend(r["team_name"], ref_year)
+        if t is not None:
+            trends[r["team_name"]] = t
+    _ALL_TRENDS_CACHE = trends
+    return trends
+
+
+def _get_trend_std() -> float:
+    """Population std dev of all teams' trends — the reference scale for 'how
+    big a trend difference is unusual'."""
+    global _TREND_STD_CACHE
+    if _TREND_STD_CACHE is not None:
+        return _TREND_STD_CACHE
+    vals = list(_get_all_team_trends().values())
+    n = len(vals)
+    if n < 2:
+        _TREND_STD_CACHE = 1.0
+        return _TREND_STD_CACHE
+    mean = sum(vals) / n
+    var = sum((x - mean) ** 2 for x in vals) / (n - 1)
+    _TREND_STD_CACHE = math.sqrt(var) if var > 0 else 1.0
+    return _TREND_STD_CACHE
+
+
+def _logit(p: float) -> float:
+    p = min(max(p, 1e-6), 1 - 1e-6)
+    return math.log(p / (1 - p))
+
+
+def _sigmoid(x: float) -> float:
+    return 1 / (1 + math.exp(-x))
+
+
+def _blend_trend_into_probability(p_hist: float, trend_a: float | None, trend_b: float | None) -> float:
+    """Nudge the historical head-to-head probability toward the team with the
+    better recent trend — but only as much as the trend gap is genuinely unusual
+    relative to the population of all teams' trends (continuous, saturating,
+    capped). No trend data on either side => no change."""
+    if trend_a is None or trend_b is None:
+        return p_hist
+    sigma = _get_trend_std()
+    diff = trend_a - trend_b
+    z_diff = abs(diff) / (sigma * math.sqrt(2)) if sigma > 0 else 0.0
+    weight = (z_diff ** 2) / (z_diff ** 2 + 1.5 ** 2)
+    max_shift = 0.6  # logit units; caps the swing from trend alone
+    sign = 1 if diff > 0 else (-1 if diff < 0 else 0)
+    adjustment = sign * weight * max_shift
+    return _sigmoid(_logit(p_hist) + adjustment)
 
 
 def search_participants(q: str, limit: int = 15) -> list[dict]:
@@ -889,7 +1001,7 @@ def get_room_matchup(teams: list[str]) -> dict:
     # Relevant fights: those where 2+ of our teams appear
     relevant_keys = [k for k, v in fight_our_teams.items() if len(v) >= 2]
 
-    # For each relevant fight, compute team fight scores and ranks
+    # For each relevant fight, compute team fight scores, ranks, and per-role scores
     fight_data: dict[tuple, dict] = {}
     for key in relevant_keys:
         tid, rnd, room = key
@@ -900,6 +1012,14 @@ def get_room_matchup(teams: list[str]) -> dict:
                GROUP BY team_name""",
             (tid, rnd, room),
         ).fetchall()
+        role_rows = conn.execute(
+            """SELECT team_name, role, AVG(avg_score) AS role_score
+               FROM performances
+               WHERE tournament_id=? AND round=? AND fight_room=? AND avg_score IS NOT NULL
+                 AND role IN ('Reporter','Opponent','Reviewer')
+               GROUP BY team_name, role""",
+            (tid, rnd, room),
+        ).fetchall()
         year_row = conn.execute("SELECT year FROM tournaments WHERE id=?", (tid,)).fetchone()
         year = year_row["year"] if year_row else None
 
@@ -907,12 +1027,17 @@ def get_room_matchup(teams: list[str]) -> dict:
         rank_map = {name: i + 1 for i, (name, _) in enumerate(scores)}
         score_map = {name: score for name, score in scores}
 
+        role_score_map: dict[str, dict[str, float]] = {}
+        for rr in role_rows:
+            role_score_map.setdefault(rr["team_name"], {})[rr["role"]] = rr["role_score"]
+
         fight_data[key] = {
             "year": year,
             "round": rnd,
             "fight_room": room,
             "rank_map": rank_map,
             "score_map": score_map,
+            "role_score_map": role_score_map,
             "all_teams": [name for name, _ in scores],
         }
 
@@ -926,6 +1051,7 @@ def get_room_matchup(teams: list[str]) -> dict:
         canonical_b = team_name_map.get(norm_b, teams[j])
 
         encounters = []
+        role_wins = {canonical_a: {r: 0 for r in ROLES}, canonical_b: {r: 0 for r in ROLES}}
         for key, fdata in fight_data.items():
             our_norms = {normalize_name(t) for t in fdata["all_teams"] if normalize_name(t) in norm_input}
             if norm_a not in our_norms or norm_b not in our_norms:
@@ -952,6 +1078,18 @@ def get_room_matchup(teams: list[str]) -> dict:
                 "third_rank": fdata["rank_map"].get(third[0]) if third else None,
             })
 
+            # Per-role win tally (Reporter/Opponent/Reviewer), independent of overall fight rank
+            rsm = fdata.get("role_score_map", {})
+            for role in ROLES:
+                sa = rsm.get(a_in_fight, {}).get(role)
+                sb = rsm.get(b_in_fight, {}).get(role)
+                if sa is None or sb is None:
+                    continue
+                if sa > sb:
+                    role_wins[canonical_a][role] += 1
+                elif sb > sa:
+                    role_wins[canonical_b][role] += 1
+
         encounters.sort(key=lambda x: (x["year"] or 0, x["round"]))
 
         a_ranks = [e["team_a_rank"] for e in encounters if e["team_a_rank"] is not None]
@@ -963,7 +1101,12 @@ def get_room_matchup(teams: list[str]) -> dict:
                         if e["team_a_rank"] is not None and e["team_b_rank"] is not None]
         n_ranked = len(ranked_pairs)
         a_above_b = sum(1 for ra, rb in ranked_pairs if ra < rb)
-        p_a = round((a_above_b + 1) / (n_ranked + 2), 3)  # Laplace: (wins+1)/(n+2)
+        p_a_historical = round((a_above_b + 1) / (n_ranked + 2), 3)  # Laplace: (wins+1)/(n+2)
+
+        # Year-over-year trend, blended in only when the gap is genuinely unusual
+        trend_a = get_team_trend(canonical_a)
+        trend_b = get_team_trend(canonical_b)
+        p_a = round(_blend_trend_into_probability(p_a_historical, trend_a, trend_b), 3)
 
         matchups.append({
             "team_a": canonical_a,
@@ -975,6 +1118,11 @@ def get_room_matchup(teams: list[str]) -> dict:
             "n_ranked": n_ranked,
             "p_a_wins": p_a,
             "p_b_wins": round(1 - p_a, 3),
+            "p_a_wins_historical": p_a_historical,
+            "p_b_wins_historical": round(1 - p_a_historical, 3),
+            "trend_a": round(trend_a, 4) if trend_a is not None else None,
+            "trend_b": round(trend_b, 4) if trend_b is not None else None,
+            "role_wins": role_wins,
             "encounters": encounters,
         })
 

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fight Stats — IYPT</title>
+  <link rel="icon" href="favicon-fightstats.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=44" />
@@ -27,12 +28,12 @@
         <div class="featured-top">
           <div class="mode-card-info">
             <div class="mode-icon">🎲</div>
-            <div class="mode-title">Who Will Win?</div>
+            <div class="mode-title">Simulate a Round</div>
             <div class="mode-desc">Enter the teams in a fight room — see what history says about who to bet on, with win probability and confidence.</div>
             <span class="featured-badge">🇨🇭 IYPT 2026 · Switzerland</span>
           </div>
           <div class="mode-ctas">
-            <div class="room-inputs">
+            <div class="room-inputs" id="room-inputs">
               <div class="autocomplete-wrap">
                 <input id="inp-hero-room-a" type="text" placeholder="Team A…" autocomplete="off" />
                 <ul id="sug-hero-room-a" class="suggestions hidden"></ul>
@@ -42,46 +43,43 @@
                 <ul id="sug-hero-room-b" class="suggestions hidden"></ul>
               </div>
               <div class="autocomplete-wrap">
-                <input id="inp-hero-room-c" type="text" placeholder="Team C (optional)…" autocomplete="off" />
+                <input id="inp-hero-room-c" type="text" placeholder="Team C…" autocomplete="off" />
                 <ul id="sug-hero-room-c" class="suggestions hidden"></ul>
               </div>
             </div>
-            <button id="btn-hero-room" class="btn-primary btn-primary-room">Who Will Win? 🎯</button>
+            <button id="btn-hero-room" class="btn-primary btn-primary-room">RUN SIMULATION</button>
+            <div class="room-locked-banner hidden" id="room-locked-banner">
+              🔒 Opens July 6 — first fight of the competition. Enjoy the rest of the site until then!
+            </div>
             <div class="featured-schedule">
               <div class="featured-schedule-head">
-                <span class="featured-dates">📅 5–12 Jul 2026 · All times in BRT (UTC−3)</span>
+                <span class="featured-dates">📅 5–12 Jul 2026</span>
                 <span class="featured-countdown" id="iypt-countdown"></span>
               </div>
               <div class="schedule-strip" id="iypt-schedule">
                 <div class="schedule-chip" data-date="2026-07-06">
                   <span class="schedule-chip-label">R1</span>
                   <span class="schedule-chip-date">Mon 6</span>
-                  <span class="schedule-chip-time">8:00</span>
                 </div>
                 <div class="schedule-chip" data-date="2026-07-07">
                   <span class="schedule-chip-label">R2</span>
                   <span class="schedule-chip-date">Tue 7</span>
-                  <span class="schedule-chip-time">3:00</span>
                 </div>
                 <div class="schedule-chip" data-date="2026-07-08">
                   <span class="schedule-chip-label">R3</span>
                   <span class="schedule-chip-date">Wed 8</span>
-                  <span class="schedule-chip-time">3:00</span>
                 </div>
                 <div class="schedule-chip" data-date="2026-07-08">
                   <span class="schedule-chip-label">R4</span>
                   <span class="schedule-chip-date">Wed 8</span>
-                  <span class="schedule-chip-time">8:30</span>
                 </div>
                 <div class="schedule-chip" data-date="2026-07-10">
                   <span class="schedule-chip-label">R5</span>
                   <span class="schedule-chip-date">Fri 10</span>
-                  <span class="schedule-chip-time">3:00</span>
                 </div>
                 <div class="schedule-chip schedule-chip-final" data-date="2026-07-11">
                   <span class="schedule-chip-label">🏆 Final</span>
                   <span class="schedule-chip-date">Sat 11</span>
-                  <span class="schedule-chip-time">3:00</span>
                 </div>
               </div>
             </div>
@@ -324,7 +322,7 @@
             <ul id="sug-room-b" class="suggestions hidden"></ul>
           </div>
           <div class="autocomplete-wrap">
-            <input id="inp-room-c" type="text" placeholder="Team C (optional)…" autocomplete="off" />
+            <input id="inp-room-c" type="text" placeholder="Team C…" autocomplete="off" />
             <ul id="sug-room-c" class="suggestions hidden"></ul>
           </div>
           <button id="btn-room" class="btn-primary">Analyze Room</button>
