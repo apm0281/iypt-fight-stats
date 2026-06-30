@@ -521,18 +521,19 @@ $('btn-dreamteam')?.addEventListener('click', () => {
 $('back-from-profile')?.addEventListener('click', () => showView(_profileBackTarget));
 $('back-from-team')?.addEventListener('click', () => showView('view-home'));
 $('back-from-compare-t')?.addEventListener('click', () => showView('view-home'));
-$('back-from-duel')?.addEventListener('click', () => showView('view-home'));
+$('back-from-duel')?.addEventListener('click', () => showView(_duelBackTarget));
 $('back-from-dreamteam')?.addEventListener('click', () => showView('view-home'));
 $('back-from-jury')?.addEventListener('click', () => showView('view-home'));
 $('back-from-room')?.addEventListener('click', () => showView('view-home'));
 $('back-from-hub')?.addEventListener('click', () => showView('view-home'));
 $('back-from-rankings')?.addEventListener('click', () => showView('view-home'));
-$('back-from-duel-setup')?.addEventListener('click', () => showView('view-hub'));
+$('back-from-duel-setup')?.addEventListener('click', () => showView(_duelSetupBackTarget));
 $('back-from-dt-setup')?.addEventListener('click', () => showView(_dtSetupBackTarget));
 
 $('btn-duelsetup-go')?.addEventListener('click', () => {
   const a = getDuelSetupA(), b = getDuelSetupB();
   if (!a || !b) { showError('Enter both fighter names'); return; }
+  _duelBackTarget = 'view-duel-setup';
   loadDuel(a, b);
 });
 $('btn-dtsetup-go')?.addEventListener('click', () => {
@@ -557,6 +558,7 @@ $('btn-hero-room')?.addEventListener('click', () => {
 $('btn-card-duel')?.addEventListener('click', () => {
   const a = getCardDuelA(), b = getCardDuelB();
   if (!a || !b) { showError('Enter both fighter names'); return; }
+  _duelBackTarget = 'view-home';
   loadDuel(a, b);
 });
 
@@ -1032,7 +1034,11 @@ async function loadCompetitorHub(name) {
   }
 }
 
-function loadDuelSetup(prefillName) {
+let _duelSetupBackTarget = 'view-hub';
+let _duelBackTarget = 'view-home';
+
+function loadDuelSetup(prefillName, backTarget = 'view-hub') {
+  _duelSetupBackTarget = backTarget;
   showView('view-duel-setup');
   $('inp-duelsetup-a').value = prefillName || '';
   $('inp-duelsetup-b').value = '';
@@ -1746,12 +1752,7 @@ $('btn-duel')?.addEventListener('click', () => {
 });
 
 function startDuelFrom(name) {
-  showView('view-home');
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'duel'));
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-duel'));
-  $('inp-duel-a').value = name;
-  $('inp-duel-b').value = '';
-  setTimeout(() => $('inp-duel-b').focus(), 80);
+  loadDuelSetup(name, 'view-profile');
 }
 
 async function loadDuel(a, b) {
