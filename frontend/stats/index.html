@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fight Stats — IYPT</title>
+  <link rel="icon" href="favicon-fightstats.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=49" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+<div id="app">
+  <!-- HOME -->
+  <div id="view-home" class="view active">
+    <header class="hero">
+      <h1>Fight Stats</h1>
+      <p class="subtitle">Fight records, player rankings &amp; stats from 9 years of IYPT competition</p>
+    </header>
+
+    <!-- Mode Cards — vertical stack -->
+    <div class="mode-grid">
+
+      <!-- 1. Who Will Win? — FEATURED -->
+      <div class="mode-card mode-card-room mode-card-featured">
+        <div class="featured-top">
+          <div class="mode-card-info">
+            <div class="mode-icon">🎲</div>
+            <div class="mode-title">Simulate a Round</div>
+            <div class="mode-desc">Enter the teams in a fight room — see what history says about who to bet on, with win probability and confidence.</div>
+            <span class="featured-badge">🇨🇭 IYPT 2026 · Switzerland</span>
+          </div>
+          <div class="mode-ctas">
+            <div class="room-inputs" id="room-inputs">
+              <div class="autocomplete-wrap">
+                <input id="inp-hero-room-a" type="text" placeholder="Team A…" autocomplete="off" />
+                <ul id="sug-hero-room-a" class="suggestions hidden"></ul>
+              </div>
+              <div class="autocomplete-wrap">
+                <input id="inp-hero-room-b" type="text" placeholder="Team B…" autocomplete="off" />
+                <ul id="sug-hero-room-b" class="suggestions hidden"></ul>
+              </div>
+              <div class="autocomplete-wrap">
+                <input id="inp-hero-room-c" type="text" placeholder="Team C…" autocomplete="off" />
+                <ul id="sug-hero-room-c" class="suggestions hidden"></ul>
+              </div>
+            </div>
+            <button id="btn-hero-room" class="btn-primary btn-primary-room">RUN SIMULATION</button>
+            <div class="room-locked-banner hidden" id="room-locked-banner">
+              <span class="rlb-icon">🔒</span>
+              <span class="rlb-headline">Opens July 6 — first fight of the competition</span>
+              <span class="rlb-sub">Enjoy the rest of the site until then!</span>
+            </div>
+            <div class="featured-schedule">
+              <div class="featured-schedule-head">
+                <span class="featured-dates">📅 5–12 Jul 2026</span>
+                <span class="featured-countdown" id="iypt-countdown"></span>
+              </div>
+              <div class="schedule-strip" id="iypt-schedule">
+                <div class="schedule-chip" data-date="2026-07-06">
+                  <span class="schedule-chip-label">R1</span>
+                  <span class="schedule-chip-date">Mon 6</span>
+                </div>
+                <div class="schedule-chip" data-date="2026-07-07">
+                  <span class="schedule-chip-label">R2</span>
+                  <span class="schedule-chip-date">Tue 7</span>
+                </div>
+                <div class="schedule-chip" data-date="2026-07-08">
+                  <span class="schedule-chip-label">R3</span>
+                  <span class="schedule-chip-date">Wed 8</span>
+                </div>
+                <div class="schedule-chip" data-date="2026-07-08">
+                  <span class="schedule-chip-label">R4</span>
+                  <span class="schedule-chip-date">Wed 8</span>
+                </div>
+                <div class="schedule-chip" data-date="2026-07-10">
+                  <span class="schedule-chip-label">R5</span>
+                  <span class="schedule-chip-date">Fri 10</span>
+                </div>
+                <div class="schedule-chip schedule-chip-final" data-date="2026-07-11">
+                  <span class="schedule-chip-label">🏆 Final</span>
+                  <span class="schedule-chip-date">Sat 11</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Home nav tabs -->
+      <div class="home-tabs">
+        <button class="home-tab active" data-panel="competed">🏆 I competed in IYPT</button>
+        <button class="home-tab" data-panel="coaching">📊 I'm coaching a team</button>
+        <button class="home-tab" data-panel="stats">📈 Stats &amp; Leaderboards</button>
+      </div>
+
+      <!-- 2. I competed in IYPT -->
+      <div class="mode-card home-panel" data-panel="competed">
+        <div class="mode-card-info">
+          <div class="mode-icon">🏆</div>
+          <div class="mode-title">I competed in IYPT</div>
+          <div class="mode-desc">Find your stats, see where you ranked, and challenge anyone from IYPT history.</div>
+        </div>
+        <div class="mode-ctas">
+          <div class="card-primary-action">
+            <div class="autocomplete-wrap">
+              <input id="inp-hero-p" type="text" placeholder="Your name…" autocomplete="off" />
+              <ul id="sug-hero-p" class="suggestions hidden"></ul>
+            </div>
+            <button id="btn-hero-p" class="btn-primary">Find My Profile</button>
+          </div>
+          <div class="card-sub-tabs">
+            <button class="card-sub-tab active" data-subtab="duel">⚔ Duel</button>
+            <button class="card-sub-tab" data-subtab="dreamteam">🤝 Dream Team</button>
+            <button class="card-sub-tab" data-subtab="compare">🌍 Compare Countries</button>
+          </div>
+          <div class="card-sub-panel" data-subtab="duel">
+            <div class="card-sub-row">
+              <div class="autocomplete-wrap">
+                <input id="inp-card-duel-a" type="text" placeholder="Fighter A…" autocomplete="off" />
+                <ul id="sug-card-duel-a" class="suggestions hidden"></ul>
+              </div>
+              <span class="card-sub-vs">vs</span>
+              <div class="autocomplete-wrap">
+                <input id="inp-card-duel-b" type="text" placeholder="Fighter B…" autocomplete="off" />
+                <ul id="sug-card-duel-b" class="suggestions hidden"></ul>
+              </div>
+              <button id="btn-card-duel" class="btn-sub btn-sub-duel">Fight!</button>
+            </div>
+          </div>
+          <div class="card-sub-panel" data-subtab="dreamteam" style="display:none">
+            <div class="card-sub-row">
+              <div class="autocomplete-wrap">
+                <input id="inp-card-dt-r" type="text" placeholder="Reporter…" autocomplete="off" />
+                <ul id="sug-card-dt-r" class="suggestions hidden"></ul>
+              </div>
+              <div class="autocomplete-wrap">
+                <input id="inp-card-dt-o" type="text" placeholder="Opponent…" autocomplete="off" />
+                <ul id="sug-card-dt-o" class="suggestions hidden"></ul>
+              </div>
+              <div class="autocomplete-wrap">
+                <input id="inp-card-dt-v" type="text" placeholder="Reviewer…" autocomplete="off" />
+                <ul id="sug-card-dt-v" class="suggestions hidden"></ul>
+              </div>
+              <button id="btn-card-dt" class="btn-sub">Assemble ⚡</button>
+            </div>
+          </div>
+          <div class="card-sub-panel" data-subtab="compare" style="display:none">
+            <div class="card-sub-row">
+              <div class="autocomplete-wrap">
+                <input id="inp-card-ct-a" type="text" placeholder="Country A…" autocomplete="off" />
+                <ul id="sug-card-ct-a" class="suggestions hidden"></ul>
+              </div>
+              <span class="card-sub-vs">vs</span>
+              <div class="autocomplete-wrap">
+                <input id="inp-card-ct-b" type="text" placeholder="Country B…" autocomplete="off" />
+                <ul id="sug-card-ct-b" class="suggestions hidden"></ul>
+              </div>
+              <button id="btn-card-ct" class="btn-sub">Compare</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. I'm coaching a team -->
+      <div class="mode-card mode-card-coach home-panel" data-panel="coaching" style="display:none">
+        <div class="mode-card-info">
+          <div class="mode-icon">📊</div>
+          <div class="mode-title">I'm coaching a team</div>
+          <div class="mode-desc">Get a personalized scouting report: peer teams, role weaknesses, and physics topics to focus on.</div>
+        </div>
+        <div class="mode-ctas">
+          <div class="autocomplete-wrap">
+            <input id="inp-hero-t" type="text" placeholder="Your team / country…" autocomplete="off" />
+            <ul id="sug-hero-t" class="suggestions hidden"></ul>
+          </div>
+          <button id="btn-hero-t" class="btn-primary btn-primary-coach">Prepare My Team</button>
+        </div>
+      </div>
+
+      <!-- 4. General Stats & Leaderboards -->
+      <div class="mode-card mode-card-stats home-panel" data-panel="stats" style="display:none">
+        <div class="mode-card-info">
+          <div class="mode-icon">📈</div>
+          <div class="mode-title">General Stats &amp; Leaderboards</div>
+          <div class="mode-desc">Global participant and team rankings, problem analytics, and role distribution analysis.</div>
+        </div>
+        <div class="mode-ctas">
+          <div class="stats-btns">
+            <button id="btn-hero-rankings" class="btn-primary btn-primary-rankings">
+              <span class="stats-btn-title">🏅 Leaderboards</span>
+              <span class="stats-btn-desc">All-time and per-year leaderboards for participants and teams</span>
+            </button>
+            <button id="btn-hero-jury" class="btn-primary btn-primary-jury">
+              <span class="stats-btn-title">⚗ Problem Analytics</span>
+              <span class="stats-btn-desc">Which physics problems score highest and appear most across editions</span>
+            </button>
+            <button id="btn-hero-scatter" class="btn-primary btn-primary-scatter">
+              <span class="stats-btn-title">📈 Country Timeline</span>
+              <span class="stats-btn-desc">Track any country's z-score trajectory across all IYPT editions</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Hidden: kept for JS compatibility (autocomplete, analytics, etc.) -->
+    <div class="search-block" style="display:none">
+      <div class="tab-row">
+        <button class="tab active" data-tab="participant">Participant</button>
+        <button class="tab" data-tab="team">Team</button>
+        <button class="tab" data-tab="dreamteam">Dream Team</button>
+        <button class="tab" data-tab="compare-t">Compare Teams</button>
+        <button class="tab" data-tab="rankings">Rankings</button>
+        <button class="tab" data-tab="analytics">Analytics</button>
+        <button class="tab" data-tab="duel">Duel</button>
+        <button class="tab" data-tab="room">Room</button>
+      </div>
+
+      <!-- single participant -->
+      <div class="tab-content active" id="tab-participant">
+        <div class="search-row">
+          <div class="autocomplete-wrap">
+            <input id="inp-participant" type="text" placeholder="Type a name…" autocomplete="off" />
+            <ul id="sug-participant" class="suggestions hidden"></ul>
+          </div>
+          <button id="btn-participant" class="btn-primary">View Profile</button>
+        </div>
+      </div>
+
+      <!-- single team -->
+      <div class="tab-content" id="tab-team">
+        <div class="search-row">
+          <div class="autocomplete-wrap">
+            <input id="inp-team" type="text" placeholder="Type a country / team…" autocomplete="off" />
+            <ul id="sug-team" class="suggestions hidden"></ul>
+          </div>
+          <button id="btn-team" class="btn-primary">View Team</button>
+        </div>
+      </div>
+
+      <!-- dream team -->
+      <div class="tab-content" id="tab-dreamteam">
+        <div class="dt-inputs">
+          <div class="dt-role-group">
+            <div class="dt-role-label rep-label">Reporter</div>
+            <div class="autocomplete-wrap">
+              <input id="inp-dt-r" type="text" placeholder="Reporter name…" autocomplete="off" />
+              <ul id="sug-dt-r" class="suggestions hidden"></ul>
+            </div>
+          </div>
+          <div class="dt-role-group">
+            <div class="dt-role-label opp-label">Opponent</div>
+            <div class="autocomplete-wrap">
+              <input id="inp-dt-o" type="text" placeholder="Opponent name…" autocomplete="off" />
+              <ul id="sug-dt-o" class="suggestions hidden"></ul>
+            </div>
+          </div>
+          <div class="dt-role-group">
+            <div class="dt-role-label rev-label">Reviewer</div>
+            <div class="autocomplete-wrap">
+              <input id="inp-dt-v" type="text" placeholder="Reviewer name…" autocomplete="off" />
+              <ul id="sug-dt-v" class="suggestions hidden"></ul>
+            </div>
+          </div>
+          <button id="btn-dreamteam" class="btn-primary" style="align-self:flex-end">Assemble ⚡</button>
+        </div>
+      </div>
+
+      <!-- compare teams -->
+      <div class="tab-content" id="tab-compare-t">
+        <div class="compare-inputs">
+          <div class="autocomplete-wrap">
+            <input id="inp-ct-a" type="text" placeholder="Team A…" autocomplete="off" />
+            <ul id="sug-ct-a" class="suggestions hidden"></ul>
+          </div>
+          <span class="vs">vs</span>
+          <div class="autocomplete-wrap">
+            <input id="inp-ct-b" type="text" placeholder="Team B…" autocomplete="off" />
+            <ul id="sug-ct-b" class="suggestions hidden"></ul>
+          </div>
+          <button id="btn-compare-t" class="btn-primary">Compare</button>
+        </div>
+      </div>
+
+      <!-- duel -->
+      <div class="tab-content" id="tab-duel">
+        <div class="compare-inputs">
+          <div class="autocomplete-wrap">
+            <input id="inp-duel-a" type="text" placeholder="Fighter A…" autocomplete="off" />
+            <ul id="sug-duel-a" class="suggestions hidden"></ul>
+          </div>
+          <span class="vs">vs</span>
+          <div class="autocomplete-wrap">
+            <input id="inp-duel-b" type="text" placeholder="Fighter B…" autocomplete="off" />
+            <ul id="sug-duel-b" class="suggestions hidden"></ul>
+          </div>
+          <button id="btn-duel" class="btn-primary" style="background:linear-gradient(135deg,#ff6b6b,#e84393)">FIGHT!</button>
+        </div>
+      </div>
+
+      <!-- analytics (kept hidden for JS compatibility) -->
+      <div class="tab-content" id="tab-analytics" style="display:none!important">
+        <div class="as-section">
+
+        <div class="section-title" style="margin-top:32px;margin-bottom:10px">World Map</div>
+        <p class="analytics-desc">Color = overall z-score. Circle size = average score. Click a country to open its team profile.</p>
+        <div id="map-container"></div>
+        <div id="map-legend"></div>
+
+        <div class="role-analysis-wrap">
+          <div class="role-analysis-header">
+            <div class="section-title" style="margin-bottom:0">Role Distribution Analysis</div>
+            <button id="btn-load-role-analysis" class="btn-primary" style="font-size:.82rem;padding:7px 14px">Load Analysis</button>
+          </div>
+          <div id="role-analysis-content"></div>
+        </div>
+      </div>
+
+      <!-- room matchup -->
+      <div class="tab-content" id="tab-room">
+        <p class="analytics-desc" style="margin-bottom:14px">Enter up to 3 teams to see their historical head-to-head record whenever they shared a fight room.</p>
+        <div class="room-inputs">
+          <div class="autocomplete-wrap">
+            <input id="inp-room-a" type="text" placeholder="Team A…" autocomplete="off" />
+            <ul id="sug-room-a" class="suggestions hidden"></ul>
+          </div>
+          <div class="autocomplete-wrap">
+            <input id="inp-room-b" type="text" placeholder="Team B…" autocomplete="off" />
+            <ul id="sug-room-b" class="suggestions hidden"></ul>
+          </div>
+          <div class="autocomplete-wrap">
+            <input id="inp-room-c" type="text" placeholder="Team C…" autocomplete="off" />
+            <ul id="sug-room-c" class="suggestions hidden"></ul>
+          </div>
+          <button id="btn-room" class="btn-primary">Analyze Room</button>
+        </div>
+      </div>
+
+      <!-- rankings tab: content moved to view-rankings -->
+      <div class="tab-content" id="tab-rankings"></div>
+    </div>
+  </div>
+  </div>
+  <!-- /view-home -->
+
+  <!-- PARTICIPANT PROFILE -->
+  <div id="view-profile" class="view">
+    <button class="back-btn" id="back-from-profile">← Back</button>
+    <div id="profile-content"></div>
+  </div>
+
+  <!-- TEAM PROFILE -->
+  <div id="view-team" class="view">
+    <button class="back-btn" id="back-from-team">← Back</button>
+    <div id="team-content"></div>
+  </div>
+
+  <!-- COMPARE TEAMS -->
+  <div id="view-compare-t" class="view">
+    <button class="back-btn" id="back-from-compare-t">← Back</button>
+    <div id="compare-t-content"></div>
+  </div>
+
+  <!-- DUEL -->
+  <div id="view-duel" class="view">
+    <button class="back-btn" id="back-from-duel">← Back</button>
+    <div id="duel-content"></div>
+  </div>
+
+  <!-- DREAM TEAM -->
+  <div id="view-dreamteam" class="view">
+    <button class="back-btn" id="back-from-dreamteam">← Back</button>
+    <div id="dreamteam-content"></div>
+  </div>
+
+  <!-- COMPETITOR HUB -->
+  <div id="view-hub" class="view">
+    <button class="back-btn" id="back-from-hub">← Back</button>
+    <div id="hub-content"></div>
+  </div>
+
+  <!-- DUEL SETUP (big inputs) -->
+  <div id="view-duel-setup" class="view">
+    <button class="back-btn" id="back-from-duel-setup">← Back</button>
+    <h2 class="big-setup-title">⚔ Set up your Duel</h2>
+    <div class="big-setup-form">
+      <div class="autocomplete-wrap big-input-wrap">
+        <input id="inp-duelsetup-a" type="text" placeholder="Fighter A…" autocomplete="off" class="big-input" />
+        <ul id="sug-duelsetup-a" class="suggestions hidden"></ul>
+      </div>
+      <span class="big-setup-vs">vs</span>
+      <div class="autocomplete-wrap big-input-wrap">
+        <input id="inp-duelsetup-b" type="text" placeholder="Fighter B…" autocomplete="off" class="big-input" />
+        <ul id="sug-duelsetup-b" class="suggestions hidden"></ul>
+      </div>
+    </div>
+    <button id="btn-duelsetup-go" class="btn-primary btn-primary-room big-go-btn">Fight! ⚔</button>
+  </div>
+
+  <!-- DREAM TEAM SETUP (big inputs) -->
+  <div id="view-dt-setup" class="view">
+    <button class="back-btn" id="back-from-dt-setup">← Back</button>
+    <h2 class="big-setup-title">🤝 Assemble your Dream Team</h2>
+    <div class="big-setup-form">
+      <div class="autocomplete-wrap big-input-wrap">
+        <input id="inp-dtsetup-r" type="text" placeholder="Reporter…" autocomplete="off" class="big-input" />
+        <ul id="sug-dtsetup-r" class="suggestions hidden"></ul>
+      </div>
+      <div class="autocomplete-wrap big-input-wrap">
+        <input id="inp-dtsetup-o" type="text" placeholder="Opponent…" autocomplete="off" class="big-input" />
+        <ul id="sug-dtsetup-o" class="suggestions hidden"></ul>
+      </div>
+      <div class="autocomplete-wrap big-input-wrap">
+        <input id="inp-dtsetup-v" type="text" placeholder="Reviewer…" autocomplete="off" class="big-input" />
+        <ul id="sug-dtsetup-v" class="suggestions hidden"></ul>
+      </div>
+    </div>
+    <button id="btn-dtsetup-go" class="btn-primary btn-primary-coach big-go-btn">Assemble ⚡</button>
+  </div>
+
+  <!-- JURY / PROBLEM ANALYTICS -->
+  <div id="view-jury" class="view view-wide">
+    <button class="back-btn" id="back-from-jury">← Back</button>
+    <div id="jury-content"></div>
+  </div>
+
+  <!-- SCATTER / COUNTRY TIMELINE -->
+  <div id="view-scatter" class="view view-wide">
+    <button class="back-btn" id="back-from-scatter">← Back</button>
+    <h2 style="margin-bottom:16px">📈 Country Timeline</h2>
+    <p class="analytics-desc" style="margin-bottom:16px">Scatter of all participants by raw score and Global Z. Highlight up to 5 countries to track their progress across years.</p>
+    <div class="as-section">
+      <div class="as-controls">
+        <select id="as-year-select" class="rk-year-select">
+          <option value="all">All Years</option>
+        </select>
+        <div class="autocomplete-wrap">
+          <input id="inp-as-team" type="text" placeholder="Highlight a country… (up to 5)" autocomplete="off" />
+          <ul id="sug-as-team" class="suggestions hidden"></ul>
+        </div>
+      </div>
+      <div id="as-chips" class="as-chips"></div>
+      <div id="as-timeline" class="as-timeline"></div>
+      <div class="chart-card" id="chart-as-card" style="padding:16px;margin-top:10px;display:block">
+        <canvas id="chart-as"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- RANKINGS -->
+  <div id="view-rankings" class="view view-wide">
+    <button class="back-btn" id="back-from-rankings">← Back</button>
+    <div class="rankings-controls">
+      <div class="rk-toggle">
+        <button class="rk-mode-btn active" data-mode="participants">Participants</button>
+        <button class="rk-mode-btn" data-mode="teams">Teams</button>
+      </div>
+      <select id="rk-year-select" class="rk-year-select">
+        <option value="">Loading years…</option>
+      </select>
+      <input id="rk-search" type="text" placeholder="🔍 Search…" autocomplete="off" class="rk-search-input" />
+    </div>
+    <div id="rankings-chart-wrap" style="margin-bottom:20px"></div>
+    <div id="rankings-table-wrap"></div>
+  </div>
+
+  <!-- ROOM MATCHUP -->
+  <div id="view-room" class="view">
+    <button class="back-btn" id="back-from-room">← Back</button>
+    <div id="room-content"></div>
+  </div>
+
+  <div id="error-toast" class="toast hidden"></div>
+</div>
+
+<footer class="site-footer">
+  Data: <a href="https://cc.iypt.org" target="_blank" rel="noopener">cc.iypt.org</a> / IYPT &nbsp;·&nbsp; Unofficial project &nbsp;·&nbsp; Non-profit
+  &nbsp;&nbsp;<a href="../" class="alumni-footer-badge">🇧🇷 IYPT Alumni Brazil</a>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.querySelectorAll('.home-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const panel = btn.dataset.panel;
+    document.querySelectorAll('.home-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.home-panel').forEach(p => { p.style.display = 'none'; });
+    btn.classList.add('active');
+    document.querySelector(`.home-panel[data-panel="${panel}"]`).style.display = '';
+  });
+});
+document.querySelectorAll('.card-sub-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const subtab = btn.dataset.subtab;
+    const card = btn.closest('.mode-card');
+    card.querySelectorAll('.card-sub-tab').forEach(b => b.classList.remove('active'));
+    card.querySelectorAll('.card-sub-panel').forEach(p => { p.style.display = 'none'; });
+    btn.classList.add('active');
+    card.querySelector(`.card-sub-panel[data-subtab="${subtab}"]`).style.display = '';
+  });
+});
+</script>
+<script src="app.js?v=47"></script>
+</body>
+</html>

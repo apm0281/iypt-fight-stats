@@ -2,7 +2,7 @@
 Export all API data as static JSON files for GitHub Pages hosting.
 Run once whenever new tournament data is scraped.
 
-Output: frontend/data/
+Output: frontend/stats/data/
 """
 
 import json
@@ -14,7 +14,7 @@ from pathlib import Path
 import queries
 from database import get_conn, normalize_name
 
-OUT = Path(__file__).parent.parent / "frontend" / "data"
+OUT = Path(__file__).parent.parent / "frontend" / "stats" / "data"
 
 
 def slug(name: str) -> str:
