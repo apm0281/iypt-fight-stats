@@ -542,10 +542,13 @@ input::placeholder { color: var(--muted); }
 .schedule-chip-final .schedule-chip-label { color: #ffd76e; }
 
 /* Stats card */
-.mode-card-stats { border-color: rgba(45,138,78,.3); }
+.mode-card-stats { border-color: rgba(45,138,78,.3); align-items: stretch; }
 .mode-card-stats:hover { border-color: rgba(45,138,78,.5); }
-.stats-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-.stats-btns .btn-primary { flex: 1; min-width: 140px; height: 182.53px; display: flex; align-items: center; justify-content: center; text-align: center; }
+.mode-card-stats .mode-ctas { justify-content: flex-start; }
+.stats-btns { display: flex; gap: 10px; flex-wrap: wrap; flex: 1; align-items: stretch; }
+.stats-btns .btn-primary { flex: 1; min-width: 140px; height: auto; padding: 20px 12px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; gap: 7px; }
+.stats-btn-title { font-size: 1rem; font-weight: 700; }
+.stats-btn-desc { font-size: 0.74rem; font-weight: 400; opacity: 0.88; line-height: 1.45; }
 .btn-primary-rankings { background: linear-gradient(135deg, #1e6e3e, #2d8a4e) !important; }
 
 /* Primary action row (search + button side by side) */

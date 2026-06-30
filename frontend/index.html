@@ -7,7 +7,7 @@
   <link rel="icon" href="favicon-fightstats.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=44" />
+  <link rel="stylesheet" href="style.css?v=45" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -187,9 +187,18 @@
         </div>
         <div class="mode-ctas">
           <div class="stats-btns">
-            <button id="btn-hero-rankings" class="btn-primary btn-primary-rankings">🏅 Rankings</button>
-            <button id="btn-hero-jury" class="btn-primary btn-primary-jury">⚗ Problem Analytics</button>
-            <button id="btn-hero-scatter" class="btn-primary btn-primary-scatter">📈 Country Timeline</button>
+            <button id="btn-hero-rankings" class="btn-primary btn-primary-rankings">
+              <span class="stats-btn-title">🏅 Rankings</span>
+              <span class="stats-btn-desc">All-time and per-year leaderboards for participants and teams</span>
+            </button>
+            <button id="btn-hero-jury" class="btn-primary btn-primary-jury">
+              <span class="stats-btn-title">⚗ Problem Analytics</span>
+              <span class="stats-btn-desc">Which physics problems score highest and appear most across editions</span>
+            </button>
+            <button id="btn-hero-scatter" class="btn-primary btn-primary-scatter">
+              <span class="stats-btn-title">📈 Country Timeline</span>
+              <span class="stats-btn-desc">Track any country's z-score trajectory across all IYPT editions</span>
+            </button>
           </div>
         </div>
       </div>
@@ -494,6 +503,6 @@ document.querySelectorAll('.card-sub-tab').forEach(btn => {
   });
 });
 </script>
-<script src="app.js?v=44"></script>
+<script src="app.js?v=45"></script>
 </body>
 </html>
