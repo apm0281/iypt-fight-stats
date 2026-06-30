@@ -471,17 +471,21 @@ input::placeholder { color: var(--muted); }
 }
 .mode-card-room.is-locked .featured-badge { background: #f3dcdb; color: #a8504e; }
 .mode-card-room.is-locked .featured-countdown { background: #f7e7e6; border-color: #e8c2c0; color: #a8504e; }
-.mode-card-room.is-locked .room-locked-banner { border-color: #e8a19f; }
 .room-locked-banner {
   background: #fff;
-  border: 1.5px dashed #c6d9ca;
+  border: 2px dashed #e8a19f;
   border-radius: 10px;
-  padding: 14px 16px;
+  padding: 18px 20px;
   text-align: center;
-  font-size: .87rem;
-  font-weight: 700;
-  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
+.rlb-icon { font-size: 1.7rem; line-height: 1; }
+.rlb-headline { font-size: 1.18rem; font-weight: 800; color: #c8413e; line-height: 1.3; }
+.rlb-sub { font-size: .88rem; font-weight: 600; color: var(--muted); }
 .room-locked-banner.hidden, #room-inputs.hidden, #btn-hero-room.hidden { display: none; }
 
 .featured-top { display: flex; flex-direction: row; gap: 28px; align-items: flex-start; width: 100%; }
