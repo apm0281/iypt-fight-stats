@@ -400,17 +400,24 @@ function autocomplete(inputId, sugId, endpoint, onSelect) {
   // Pre-load search index in static mode so first keystroke is instant
   if (STATIC) _loadIdx(endpoint).catch(() => {});
 
+  async function suggest(q) {
+    try {
+      const data = await apiFetch(`/api/search/${endpoint}?q=${encodeURIComponent(q)}`);
+      renderSuggestions(data);
+    } catch { sug.classList.add('hidden'); }
+  }
+
+  inp.addEventListener('focus', () => {
+    selected = null;
+    clearTimeout(timer);
+    suggest(inp.value.trim());
+  });
+
   inp.addEventListener('input', () => {
     selected = null;
     clearTimeout(timer);
     const q = inp.value.trim();
-    if (q.length < 2) { sug.classList.add('hidden'); return; }
-    timer = setTimeout(async () => {
-      try {
-        const data = await apiFetch(`/api/search/${endpoint}?q=${encodeURIComponent(q)}`);
-        renderSuggestions(data);
-      } catch { sug.classList.add('hidden'); }
-    }, 250);
+    timer = setTimeout(() => suggest(q), 150);
   });
 
   function renderSuggestions(items) {
