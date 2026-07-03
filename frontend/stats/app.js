@@ -72,7 +72,7 @@
     });
   }
 
-  const isLocked = todayStr < FIGHT_START;
+  const isLocked = false; // temporarily unlocked for user flow testing
   if (roomInputs && roomBtn && lockedBanner) {
     roomInputs.classList.toggle('hidden', isLocked);
     roomBtn.classList.toggle('hidden', isLocked);
