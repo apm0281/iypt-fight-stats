@@ -1463,8 +1463,8 @@ function renderTeamPrep(t, peers, trend) {
         ${depthAlert}
       </div>
     </div>
-    ${peers ? `<div style="margin-top:18px">${peerHtml}</div>` : ''}
     ${posCalcHtml}
+    ${peers ? `<div style="margin-top:18px">${peerHtml}</div>` : ''}
   </div>`;
 }
 
