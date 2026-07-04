@@ -1352,41 +1352,53 @@ function renderTeamPrep(t, peers, trend) {
   let peerHtml = '';
   if (peers) {
     const peerYear = peers.year;
-    const all = [
-      ...peers.above.map(p => ({ ...p, isAbove: true })),
-      { team_name: peers.team, team_z: peers.team_z, final_rank: peers.final_rank, isOurs: true },
-      ...peers.below.map(p => ({ ...p, isAbove: false })),
-    ];
-    const peerItems = all.map(p => {
-      const zSign = p.team_z != null ? (p.team_z >= 0 ? '+' : '') : '';
-      const zStr = p.team_z != null ? `${zSign}${p.team_z.toFixed(2)}` : '—';
-      const zCol = zColor(p.team_z);
+    const myZ = peers.team_z ?? 0;
+    const aboveWithGap = peers.above.map(p => ({ ...p, gap: (p.team_z ?? 0) - myZ }));
+    const belowWithGap = peers.below.map(p => ({ ...p, gap: myZ - (p.team_z ?? 0) }));
+    const maxGap = Math.max(...aboveWithGap.map(p => p.gap), ...belowWithGap.map(p => p.gap), 0.01);
+
+    function peerGapRow(p, isAbove) {
+      const pct = Math.round((p.gap / maxGap) * 100);
       const rankStr = p.final_rank ? `#${p.final_rank}` : '—';
-      if (p.isOurs) {
-        return `<div class="peer-item peer-our">
-          <span class="peer-rank">${rankStr}</span>
-          <span class="peer-name">▶ ${p.team_name}</span>
-          <span class="peer-z" style="color:${zCol}">${zStr}</span>
-        </div>`;
-      }
-      const cls = p.isAbove ? 'peer-item peer-above' : 'peer-item';
-      return `<div class="${cls}" data-team="${p.team_name}">
-        <span class="peer-rank">${rankStr}</span>
-        <span class="peer-name">${p.team_name}</span>
-        <span class="peer-z" style="color:${zCol}">${zStr}</span>
+      return `<div class="peer-gap-row ${isAbove ? 'pgr-above' : 'pgr-below'}" data-team="${p.team_name}">
+        <span class="pgr-rank">${rankStr}</span>
+        <span class="pgr-name">${p.team_name}</span>
+        <span class="pgr-bar-wrap"><span class="pgr-bar" style="width:${pct}%"></span></span>
+        <span class="pgr-gap">${isAbove ? '+' : '−'}${p.gap.toFixed(2)}</span>
       </div>`;
-    }).join('');
+    }
+
+    // Above: farthest first, nearest last (nearest sits closest to the user bar)
+    const aboveRows = [...aboveWithGap].reverse().map(p => peerGapRow(p, true)).join('');
+    // Below: nearest first (nearest sits just under the user bar)
+    const belowRows = belowWithGap.map(p => peerGapRow(p, false)).join('');
+
+    const myZSign = myZ >= 0 ? '+' : '';
+    const myZStr = `${myZSign}${myZ.toFixed(2)}`;
     const rankInField = peers.rank_in_field, total = peers.total_teams;
+
+    const aboveSection = aboveWithGap.length ? `<div class="peer-gap-section">
+      <div class="peer-gap-label pgr-label-above">↑ rivals to overtake</div>
+      ${aboveRows}
+    </div>` : '';
+
+    const belowSection = belowWithGap.length ? `<div class="peer-gap-section">
+      <div class="peer-gap-label pgr-label-below">↓ chasing you</div>
+      ${belowRows}
+    </div>` : '';
+
     peerHtml = `<div>
       <div class="prep-section-label">Peer Teams · ${peerYear}</div>
-      <div style="color:var(--muted);font-size:.78rem;margin-bottom:8px">
-        Ranked by avg z-score across all fights in ${peerYear} (judge-normalized). Your team is #${rankInField} of ${total}.
-        Teams above are closer rivals to overtake; teams below are chasing you.
+      <div style="color:var(--muted);font-size:.78rem;margin-bottom:10px">Gap in avg z-score · ranked ${rankInField} of ${total}</div>
+      <div class="peer-gap-wrap">
+        ${aboveSection}
+        <div class="peer-our-bar">
+          <span class="peer-our-badge">#${peers.final_rank || rankInField}</span>
+          <span class="peer-our-name">▶ ${peers.team}</span>
+          <span class="peer-our-z" style="color:${zColor(myZ)}">${myZStr}</span>
+        </div>
+        ${belowSection}
       </div>
-      <div class="peer-list-header" style="display:flex;justify-content:space-between;padding:0 10px 4px;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">
-        <span>Rank · Team</span><span>Avg Z</span>
-      </div>
-      <div class="peer-list">${peerItems}</div>
       <div class="prep-alert prep-alert-info" style="margin-top:8px">💡 Click a team to view their Physics Intelligence and identify where they outperform you.</div>
     </div>`;
   }

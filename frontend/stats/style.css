@@ -676,14 +676,26 @@ input::placeholder { color: var(--muted); }
 .prep-alert-warn { background: rgba(224,84,84,.12); color: #e05454; border: 1px solid rgba(224,84,84,.25); }
 .prep-alert-ok   { background: rgba(0,184,148,.12); color: var(--green); border: 1px solid rgba(0,184,148,.25); }
 .prep-alert-info { background: rgba(45,138,78,.1); color: var(--accent); border: 1px solid rgba(45,138,78,.15); }
-.peer-list { display: flex; flex-direction: column; gap: 3px; }
-.peer-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 8px; font-size: .84rem; cursor: pointer; transition: background .15s; }
-.peer-item:hover { background: var(--surface); }
-.peer-item.peer-our { background: rgba(45,138,78,.1); border: 1px solid rgba(45,138,78,.25); cursor: default; }
-.peer-item.peer-above { opacity: .75; }
-.peer-rank { color: var(--muted); min-width: 24px; font-size: .76rem; }
-.peer-name { flex: 1; font-weight: 500; }
-.peer-z { font-weight: 700; font-size: .82rem; min-width: 46px; text-align: right; }
+.peer-gap-wrap { display: flex; flex-direction: column; gap: 6px; }
+.peer-gap-section { display: flex; flex-direction: column; gap: 2px; }
+.peer-gap-label { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; padding: 6px 4px 3px; }
+.pgr-label-above { color: var(--red); }
+.pgr-label-below { color: var(--accent); }
+.peer-gap-row { display: flex; align-items: center; gap: 8px; padding: 5px 6px; border-radius: 6px; cursor: pointer; font-size: .83rem; transition: background .12s; }
+.peer-gap-row:hover { background: var(--surface); }
+.pgr-rank { color: var(--muted); font-size: .72rem; min-width: 28px; flex-shrink: 0; }
+.pgr-name { font-weight: 500; min-width: 90px; flex-shrink: 0; }
+.pgr-bar-wrap { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.pgr-bar { height: 100%; border-radius: 3px; transition: width .3s; }
+.pgr-above .pgr-bar { background: var(--red); }
+.pgr-below .pgr-bar { background: var(--accent); }
+.pgr-gap { font-size: .78rem; font-weight: 700; min-width: 38px; text-align: right; flex-shrink: 0; }
+.pgr-above .pgr-gap { color: var(--red); }
+.pgr-below .pgr-gap { color: var(--accent); }
+.peer-our-bar { display: flex; align-items: center; gap: 10px; padding: 10px 10px; background: rgba(45,138,78,.1); border: 1px solid rgba(45,138,78,.3); border-radius: 8px; margin: 2px 0; }
+.peer-our-badge { background: var(--accent); color: #fff; border-radius: 12px; padding: 2px 9px; font-size: .72rem; font-weight: 800; flex-shrink: 0; }
+.peer-our-name { flex: 1; font-weight: 700; font-size: .9rem; }
+.peer-our-z { font-weight: 800; font-size: .88rem; flex-shrink: 0; }
 
 /* ── Profile rank banner ─────────────────────────────────── */
 .rank-banner { background: rgba(45,138,78,.1); border: 1px solid rgba(45,138,78,.25); border-radius: 10px; padding: 10px 16px; margin: 14px 0; font-size: .88rem; color: var(--text); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
