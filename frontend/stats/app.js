@@ -594,6 +594,9 @@ async function loadScatterView(teamName) {
     _asState.teams.push({ name: teamName, color: _AS_COLORS[_asState.teams.length % _AS_COLORS.length] });
   }
   await loadAnalytics();
+  if (teamName && _asState.teams.length > 0) {
+    setTimeout(() => tlPlay(), 300);
+  }
 }
 
 // ── Share / URL deep-linking ──────────────────────────────────────────────────
