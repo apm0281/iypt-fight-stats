@@ -1038,6 +1038,9 @@ async function loadCompetitorHub(name) {
         }
       });
     });
+    $('hub-content').querySelectorAll('[data-team]').forEach(el => {
+      el.addEventListener('click', () => loadTeam(el.dataset.team));
+    });
   } catch (err) {
     showError(err.message);
     showView('view-home');
@@ -1078,7 +1081,7 @@ function renderCompetitorHub(p) {
   const statLine = wtZ != null
     ? `Global Z: ${wtZ >= 0 ? '+' : ''}${wtZ} · ${totalFights} fights · ${p.years.length} tournament${p.years.length > 1 ? 's' : ''}`
     : `${totalFights} fights · ${p.years.length} tournament${p.years.length > 1 ? 's' : ''}`;
-  const teamLine = latestTeam ? `${latestTeam} · ${p.years.join(', ')}` : p.years.join(', ');
+  const teamLine = latestTeam ? `<span class="hub-team-link" data-team="${latestTeam}">${latestTeam}</span> · ${p.years.join(', ')}` : p.years.join(', ');
 
   return `
     <div class="hub-header">

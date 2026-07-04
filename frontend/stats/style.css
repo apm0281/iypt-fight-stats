@@ -712,6 +712,8 @@ input::placeholder { color: var(--muted); }
 .hub-avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; color: #fff; margin: 0 auto 16px; }
 .hub-name { font-size: 1.8rem; font-weight: 800; }
 .hub-sub { color: var(--muted); font-size: .9rem; margin-top: 4px; }
+.hub-team-link { color: var(--accent); font-weight: 600; cursor: pointer; }
+.hub-team-link:hover { text-decoration: underline; }
 .hub-choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 8px; }
 .hub-choice { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px 20px; text-align: center; cursor: pointer; transition: border-color .2s, transform .15s; }
 .hub-choice:hover { border-color: var(--accent); transform: translateY(-2px); }
