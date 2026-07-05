@@ -604,11 +604,27 @@ async function loadScatterView(teamName) {
 function shareUrl(params) {
   const u = new URL(window.location.href.split('?')[0]);
   Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
-  navigator.clipboard.writeText(u.toString()).then(() => {
-    showToast('Link copied to clipboard!');
-  }).catch(() => {
-    prompt('Copy this link:', u.toString());
-  });
+  _copyToClipboard(u.toString());
+}
+
+function _copyToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => showToast('Copied!')).catch(() => _clipboardFallback(text));
+  } else {
+    _clipboardFallback(text);
+  }
+}
+
+function _clipboardFallback(text) {
+  const el = document.createElement('textarea');
+  el.value = text;
+  el.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0;pointer-events:none';
+  document.body.appendChild(el);
+  el.focus();
+  el.select();
+  try { document.execCommand('copy'); showToast('Copied!'); }
+  catch { showToast('Could not copy link automatically'); }
+  document.body.removeChild(el);
 }
 
 function showToast(msg) {
@@ -637,12 +653,15 @@ function shareBtn(params, label = '🔗 Share') {
   const team     = p.get('team');
   const jury     = p.get('jury');
   const room     = p.get('room');
+  const ctA      = p.get('a');
+  const ctB      = p.get('b');
   if (profile)              setTimeout(() => loadProfile(profile), 0);
   else if (duelA && duelB)  setTimeout(() => loadDuel(duelA, duelB), 0);
   else if (dtR && dtO && dtV) setTimeout(() => loadDreamTeam(dtR, dtO, dtV), 0);
   else if (team)            setTimeout(() => loadTeam(team), 0);
   else if (jury !== null)   setTimeout(() => loadJury(), 0);
   else if (room)            setTimeout(() => loadRoomMatchup(room.split(',')), 0);
+  else if (ctA && ctB)      setTimeout(() => loadCompareTeams(ctA, ctB), 0);
   else if (p.get('rankings') !== null) setTimeout(() => loadRankingsView(), 0);
 })();
 
@@ -3616,3 +3635,4 @@ function renderThreeTeamRoom(teams, matchups) {
 
   return `<div class="rm-3team">${podiumHtml}${pairwiseHtml}${oddsHtml}${historyHtml}</div>`;
 }
+
