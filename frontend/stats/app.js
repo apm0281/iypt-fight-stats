@@ -602,6 +602,7 @@ async function loadScatterView(teamName) {
 // ── Share / URL deep-linking ──────────────────────────────────────────────────
 
 function shareUrl(params) {
+  gtag('event', 'share', { feature: Object.keys(params)[0] });
   const u = new URL(window.location.href.split('?')[0]);
   Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
   _copyToClipboard(u.toString());
@@ -668,6 +669,7 @@ function shareBtn(params, label = '🔗 Share') {
 let _profileBackTarget = 'view-home';
 
 async function loadProfile(name, backTarget = 'view-home') {
+  gtag('event', 'view_profile', { competitor: name });
   _profileBackTarget = backTarget;
   showView('view-profile');
   $('profile-content').innerHTML = '<div class="loader">Loading…</div>';
@@ -1040,6 +1042,7 @@ function renderProfile(p) {
 // ── Competitor Hub ────────────────────────────────────────────────────────────
 
 async function loadCompetitorHub(name) {
+  gtag('event', 'view_competitor_hub', { competitor: name });
   showView('view-hub');
   $('hub-content').innerHTML = '<div class="loader">Loading…</div>';
   try {
@@ -1138,6 +1141,7 @@ $('btn-team')?.addEventListener('click', () => {
 });
 
 async function loadTeam(name) {
+  gtag('event', 'view_team', { team: name });
   showView('view-team');
   $('team-content').innerHTML = '<div class="loader">Loading…</div>';
   try {
@@ -1583,6 +1587,7 @@ $('btn-compare-t')?.addEventListener('click', () => {
 });
 
 async function loadCompareTeams(a, b) {
+  gtag('event', 'view_compare_teams', { team_a: a, team_b: b });
   showView('view-compare-t');
   $('compare-t-content').innerHTML = '<div class="loader">Loading…</div>';
   try {
@@ -1800,6 +1805,7 @@ function startDuelFrom(name) {
 }
 
 async function loadDuel(a, b) {
+  gtag('event', 'view_duel', { competitor_a: a, competitor_b: b });
   showView('view-duel');
   $('duel-content').innerHTML = '<div class="loader">Loading…</div>';
   try {
@@ -1989,6 +1995,7 @@ function animateDuel(data) {
 // ── Dream Team ────────────────────────────────────────────────────────────────
 
 async function loadDreamTeam(rName, oName, vName) {
+  gtag('event', 'view_dream_team', { reporter: rName, opponent: oName, reviewer: vName });
   showView('view-dreamteam');
   $('dreamteam-content').innerHTML = '<div class="loader">Loading…</div>';
   try {
@@ -3064,6 +3071,7 @@ function teamCols() {
 }
 
 async function loadRankingsView() {
+  gtag('event', 'view_rankings');
   showView('view-rankings');
   await ensureRkYears();
 }
@@ -3298,6 +3306,7 @@ function renderRankingsTable() {
 // ── Room Matchup ──────────────────────────────────────────────────────────────
 
 async function loadRoomMatchup(teams) {
+  gtag('event', 'simulate_round', { teams: teams.join(',') });
   showView('view-room');
   $('room-content').innerHTML = '<div class="loader">Loading…</div>';
   try {
