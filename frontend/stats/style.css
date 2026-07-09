@@ -968,3 +968,46 @@ details[open] .rm-history-toggle::before { transform: rotate(90deg); }
   .duel-fighters { grid-template-columns: 1fr; }
   .duel-cats { grid-template-columns: 1fr; }
 }
+
+/* ── IYPT 2026 Live Prediction Accuracy ────────────────────── */
+.lv26-wrap { max-width: 860px; margin: 0 auto; padding-bottom: 32px; }
+.lv26-header { text-align: center; margin-bottom: 16px; }
+.lv26-title { font-size: 1.3rem; font-weight: 800; color: var(--text); }
+.lv26-subtitle { font-size: .8rem; color: var(--muted); margin-top: 3px; }
+.lv26-overall { text-align: center; margin: 16px 0 12px; }
+.lv26-acc-number { font-size: 3rem; font-weight: 900; line-height: 1; }
+.lv26-acc-high { color: var(--accent); }
+.lv26-acc-mid  { color: #f5a623; }
+.lv26-acc-low  { color: var(--red); }
+.lv26-acc-label { font-size: .85rem; color: var(--muted); margin-top: 4px; }
+.lv26-round-badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px; }
+.lv26-round-badge { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; text-align: center; min-width: 70px; }
+.lv26-badge-high { border-color: var(--accent); }
+.lv26-badge-mid  { border-color: #f5a623; }
+.lv26-badge-low  { border-color: var(--red); }
+.lv26-rb-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+.lv26-rb-score { font-size: 1rem; font-weight: 800; color: var(--text); }
+.lv26-rb-pct   { font-size: .72rem; font-weight: 700; color: var(--muted); }
+.lv26-legend { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: .75rem; color: var(--muted); margin-bottom: 18px; padding: 8px 12px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border); }
+.lv26-round-section { margin-bottom: 24px; }
+.lv26-round-title { font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+.lv26-rooms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+.lv26-room { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.lv26-room-ok   { border-left: 3px solid var(--accent); }
+.lv26-room-miss { border-left: 3px solid var(--red); }
+.lv26-room-upset { background: rgba(220,53,69,.04); }
+.lv26-room-head { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.lv26-room-label { font-size: .72rem; font-weight: 800; background: var(--border); border-radius: 4px; padding: 1px 6px; color: var(--muted); }
+.lv26-result-icon { font-size: .95rem; font-weight: 900; }
+.lv26-room-ok   .lv26-result-icon { color: var(--accent); }
+.lv26-room-miss .lv26-result-icon { color: var(--red); }
+.lv26-upset-tag { font-size: .6rem; font-weight: 900; background: var(--red); color: #fff; border-radius: 4px; padding: 1px 5px; letter-spacing: .4px; }
+.lv26-chip-row { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+.lv26-chip { display: inline-flex; align-items: center; gap: 4px; font-size: .72rem; font-weight: 500; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 2px 6px; transition: background .12s; }
+.lv26-chip:hover { background: var(--surface); }
+.lv26-chip-winner { background: rgba(45,138,78,.12); border-color: var(--accent); font-weight: 700; color: var(--accent); }
+.lv26-chip-wrong-pred { background: rgba(220,53,69,.09); border-color: var(--red); color: var(--red); }
+.lv26-chip-pct { font-size: .65rem; opacity: .75; }
+.lv26-room-verdict { font-size: .75rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px; }
+.lv26-verdict-pred strong, .lv26-verdict-act strong { color: var(--text); }
+.lv26-no-data { font-size: .68rem; background: var(--border); border-radius: 4px; padding: 1px 5px; }

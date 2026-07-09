@@ -35,6 +35,7 @@
       <div id="rankings-chart-wrap" style="margin-bottom:20px"></div>
       <div id="rankings-table-wrap"></div>`,
     'view-room': `<button class="back-btn" id="back-from-room">← Back</button><div id="room-content"></div>`,
+    'view-live2026': `<button class="back-btn" id="back-from-live2026">← Back</button><div id="live2026-content"></div>`,
   };
   for (const [id, html] of Object.entries(views)) {
     if (!document.getElementById(id)) {
@@ -532,6 +533,7 @@ $('back-from-duel')?.addEventListener('click', () => showView(_duelBackTarget));
 $('back-from-dreamteam')?.addEventListener('click', () => showView('view-home'));
 $('back-from-jury')?.addEventListener('click', () => showView('view-home'));
 $('back-from-room')?.addEventListener('click', () => showView('view-home'));
+$('back-from-live2026')?.addEventListener('click', () => showView('view-home'));
 $('back-from-hub')?.addEventListener('click', () => showView('view-home'));
 $('back-from-rankings')?.addEventListener('click', () => showView('view-home'));
 $('back-from-duel-setup')?.addEventListener('click', () => showView(_duelSetupBackTarget));
@@ -664,6 +666,7 @@ function shareBtn(params, label = '🔗 Share') {
   else if (room)            setTimeout(() => loadRoomMatchup(room.split(',')), 0);
   else if (ctA && ctB)      setTimeout(() => loadCompareTeams(ctA, ctB), 0);
   else if (p.get('rankings') !== null) setTimeout(() => loadRankingsView(), 0);
+  else if (p.get('live2026') !== null) setTimeout(() => loadLive2026(), 0);
 })();
 
 let _profileBackTarget = 'view-home';
@@ -3645,3 +3648,97 @@ function renderThreeTeamRoom(teams, matchups) {
   return `<div class="rm-3team">${podiumHtml}${pairwiseHtml}${oddsHtml}${historyHtml}</div>`;
 }
 
+// ── IYPT 2026 Live Prediction Accuracy (hidden, URL-gated: ?live2026) ────────
+
+async function loadLive2026() {
+  showView('view-live2026');
+  const el = $('live2026-content');
+  el.innerHTML = '<div class="loader">Loading…</div>';
+  try {
+    const r = await fetch('data/iypt2026_predictions.json');
+    if (!r.ok) throw new Error('Data not found');
+    const data = await r.json();
+    el.innerHTML = renderLive2026(data);
+    el.querySelectorAll('[data-team]').forEach(node => {
+      node.addEventListener('click', () => loadTeam(node.dataset.team));
+    });
+  } catch (err) {
+    el.innerHTML = `<div class="rm-empty">Failed to load: ${err.message}</div>`;
+  }
+}
+
+function renderLive2026(data) {
+  const { correct, total, accuracy, rooms } = data;
+  const rounds = [1, 2, 3, 4];
+
+  const roundStats = rounds.map(r => {
+    const rms = rooms.filter(x => x.round === r);
+    const c = rms.filter(x => x.correct).length;
+    return { round: r, correct: c, total: rms.length, pct: Math.round(c / rms.length * 100) };
+  });
+
+  const roundBadges = roundStats.map(s => {
+    const cls = s.pct >= 70 ? 'lv26-badge-high' : s.pct >= 50 ? 'lv26-badge-mid' : 'lv26-badge-low';
+    return `<div class="lv26-round-badge ${cls}">
+      <div class="lv26-rb-label">Round ${s.round}</div>
+      <div class="lv26-rb-score">${s.correct}/${s.total}</div>
+      <div class="lv26-rb-pct">${s.pct}%</div>
+    </div>`;
+  }).join('');
+
+  const overallCls = accuracy >= 70 ? 'lv26-acc-high' : accuracy >= 50 ? 'lv26-acc-mid' : 'lv26-acc-low';
+
+  const roomRows = rooms.map(rm => {
+    const topPred = rm.team_probs[0];
+    const correct = rm.correct;
+    const upset = !correct && rm.actual_pct < 30;
+    const teamChips = rm.team_probs.map(tp => {
+      const isWinner = tp.team === rm.actual_winner;
+      const isPred = tp.team === rm.predicted_winner;
+      const flag = countryFlag(tp.team) || '';
+      return `<span class="lv26-chip ${isWinner ? 'lv26-chip-winner' : ''} ${isPred && !correct ? 'lv26-chip-wrong-pred' : ''}"
+        data-team="${tp.team}" style="cursor:pointer">${flag} ${tp.team} <span class="lv26-chip-pct">${tp.prob}%</span></span>`;
+    }).join('');
+
+    return `<div class="lv26-room ${correct ? 'lv26-room-ok' : 'lv26-room-miss'} ${upset ? 'lv26-room-upset' : ''}">
+      <div class="lv26-room-head">
+        <span class="lv26-room-label">R${rm.round}${rm.room}</span>
+        <span class="lv26-result-icon">${correct ? '✓' : '✗'}</span>
+        ${upset ? '<span class="lv26-upset-tag">UPSET</span>' : ''}
+      </div>
+      <div class="lv26-chip-row">${teamChips}</div>
+      <div class="lv26-room-verdict">
+        <span class="lv26-verdict-pred">Predicted: <strong>${rm.predicted_winner}</strong></span>
+        <span class="lv26-verdict-act">Actual: <strong>${rm.actual_winner}</strong></span>
+        ${rm.n_encounters === 0 ? '<span class="lv26-no-data">No prior fights</span>' : ''}
+      </div>
+    </div>`;
+  });
+
+  const byRound = rounds.map(r => {
+    const rRooms = roomRows.filter((_, i) => rooms[i].round === r);
+    return `<div class="lv26-round-section">
+      <div class="lv26-round-title">Round ${r}</div>
+      <div class="lv26-rooms-grid">${rRooms.join('')}</div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="lv26-wrap">
+      <div class="lv26-header">
+        <div class="lv26-title">IYPT 2026 · Prediction Accuracy</div>
+        <div class="lv26-subtitle">Rounds 1–4 · ${total} rooms compared</div>
+      </div>
+      <div class="lv26-overall">
+        <div class="lv26-acc-number ${overallCls}">${accuracy}%</div>
+        <div class="lv26-acc-label">${correct} of ${total} rooms predicted correctly</div>
+      </div>
+      <div class="lv26-round-badges">${roundBadges}</div>
+      <div class="lv26-legend">
+        <span class="lv26-chip lv26-chip-winner" style="cursor:default">Actual winner</span>
+        <span class="lv26-chip lv26-chip-wrong-pred" style="cursor:default">Wrong prediction</span>
+        <span class="lv26-upset-tag">UPSET</span> = we gave &lt;30% to winner
+      </div>
+      ${byRound}
+    </div>`;
+}
