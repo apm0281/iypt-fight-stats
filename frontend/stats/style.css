@@ -1021,8 +1021,10 @@ details[open] .rm-history-toggle::before { transform: rotate(90deg); }
   box-shadow: 0 4px 22px rgba(213,43,30,.08);
 }
 .mode-card-iypt26:hover { border-color: var(--swiss-red); box-shadow: 0 6px 28px rgba(213,43,30,.18); }
+.mode-card-iypt26 .featured-top { align-items: center; }
 .mode-card-iypt26 .mode-title { color: var(--swiss-red); font-weight: 800; }
 .mode-card-iypt26 .featured-badge { background: var(--swiss-red) !important; color: #fff !important; }
+.iypt26-footer-badge { display: inline-block; margin-top: 14px; }
 .mode-card-iypt26 input[type="text"] { border-color: #f0b8b4 !important; color: #1a0505; }
 .mode-card-iypt26 input[type="text"]:focus { border-color: var(--swiss-red) !important; }
 .mode-card-iypt26 input::placeholder { color: #c08888 !important; }
