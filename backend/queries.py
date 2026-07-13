@@ -960,12 +960,33 @@ def get_team_rankings(year: int | None) -> list[dict]:
         }
 
     result = []
+    seen_teams: set[str] = set()
     for r in perf_rows:
         entry = dict(r)
         entry.update(ranks.get(r["team"], {"final_rank": None, "final_tsp": None, "n_years": None}))
         result.append(entry)
+        seen_teams.add(r["team"])
 
-    result.sort(key=lambda x: (x["overall_z"] is None, -(x["overall_z"] or 0)))
+    # For year-specific view, include teams with rank data but no performances yet
+    if year is not None:
+        for r in rank_rows:
+            if r["team_name"] not in seen_teams:
+                result.append({
+                    "team": r["team_name"],
+                    "overall_avg": None, "overall_z": None,
+                    "reporter_avg": None, "opponent_avg": None, "reviewer_avg": None,
+                    "reporter_z": None, "opponent_z": None, "reviewer_z": None,
+                    "n_members": None,
+                    "final_rank": r["final_rank"],
+                    "final_tsp": r["final_tsp"],
+                    "n_years": 1,
+                })
+
+    result.sort(key=lambda x: (
+        x["overall_z"] is None,
+        -(x["overall_z"] or 0),
+        x["final_rank"] or 9999,
+    ))
     return result
 
 
