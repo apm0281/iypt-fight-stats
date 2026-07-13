@@ -1017,11 +1017,18 @@ details[open] .rm-history-toggle::before { transform: rotate(90deg); }
 .mode-card-iypt26 {
   border: 2px solid var(--swiss-red);
   border-top: 4px solid var(--swiss-red);
+  background: linear-gradient(145deg, #fff 0%, #fff5f4 100%);
+  box-shadow: 0 4px 22px rgba(213,43,30,.08);
 }
+.mode-card-iypt26:hover { border-color: var(--swiss-red); box-shadow: 0 6px 28px rgba(213,43,30,.18); }
 .mode-card-iypt26 .mode-title { color: var(--swiss-red); font-weight: 800; }
 .mode-card-iypt26 .featured-badge { background: var(--swiss-red) !important; color: #fff !important; }
+.mode-card-iypt26 input[type="text"] { border-color: #f0b8b4 !important; color: #1a0505; }
+.mode-card-iypt26 input[type="text"]:focus { border-color: var(--swiss-red) !important; }
+.mode-card-iypt26 input::placeholder { color: #c08888 !important; }
 .mode-card-iypt26 .btn-primary { background: var(--swiss-red) !important; }
 .mode-card-iypt26 .btn-primary:hover { background: #b52318 !important; }
+.mode-card-iypt26 .btn-sub:hover { border-color: var(--swiss-red); color: var(--swiss-red); background: rgba(213,43,30,.06); }
 
 /* ── What We Learned section ─────────────────── */
 .lv26-wtl { margin-top: 32px; padding-top: 24px; border-top: 2px solid var(--border); }

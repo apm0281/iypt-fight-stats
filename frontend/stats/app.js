@@ -485,7 +485,7 @@ const getHeroRoomB = autocomplete('inp-hero-room-b', 'sug-hero-room-b', 'teams',
 const getHeroRoomC = autocomplete('inp-hero-room-c', 'sug-hero-room-c', 'teams', null);
 
 // IYPT 2026 featured fighter search
-const get2026P = autocomplete('inp-2026-p', 'sug-2026-p', 'participants', null);
+const get2026P = autocomplete('inp-2026-p', 'sug-2026-p', 'participants', null, item => item.years?.includes('2026'));
 
 // "I competed" card sub-action inputs
 const getCardDuelA = autocomplete('inp-card-duel-a', 'sug-card-duel-a', 'participants', null);
