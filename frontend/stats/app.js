@@ -391,7 +391,7 @@ document.querySelectorAll('.tab').forEach(tab => {
 
 // ── Autocomplete helper ───────────────────────────────────────────────────────
 
-function autocomplete(inputId, sugId, endpoint, onSelect) {
+function autocomplete(inputId, sugId, endpoint, onSelect, filterFn = null) {
   const inp = $(inputId);
   const sug = $(sugId);
   if (!inp || !sug) return () => null;   // element absent in cached HTML — skip silently
@@ -422,6 +422,7 @@ function autocomplete(inputId, sugId, endpoint, onSelect) {
   });
 
   function renderSuggestions(items) {
+    if (filterFn) items = items.filter(filterFn);
     if (!items.length) { sug.classList.add('hidden'); return; }
     sug.innerHTML = '';
     items.forEach(item => {
@@ -479,7 +480,7 @@ const getRoomC = autocomplete('inp-room-c', 'sug-room-c', 'teams', null);
 
 // Room matchup hero card inputs
 const getHeroRoomA = autocomplete('inp-hero-room-a', 'sug-hero-room-a', 'teams', null);
-const getHero26 = autocomplete('inp-hero-26', 'sug-hero-26', 'participants', null);
+const getHero26 = autocomplete('inp-hero-26', 'sug-hero-26', 'participants', null, item => item.years?.includes('2026'));
 const getHeroRoomB = autocomplete('inp-hero-room-b', 'sug-hero-room-b', 'teams', null);
 const getHeroRoomC = autocomplete('inp-hero-room-c', 'sug-hero-room-c', 'teams', null);
 
