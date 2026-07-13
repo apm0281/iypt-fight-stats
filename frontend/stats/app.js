@@ -479,6 +479,7 @@ const getRoomC = autocomplete('inp-room-c', 'sug-room-c', 'teams', null);
 
 // Room matchup hero card inputs
 const getHeroRoomA = autocomplete('inp-hero-room-a', 'sug-hero-room-a', 'teams', null);
+const getHero26 = autocomplete('inp-hero-26', 'sug-hero-26', 'participants', null);
 const getHeroRoomB = autocomplete('inp-hero-room-b', 'sug-hero-room-b', 'teams', null);
 const getHeroRoomC = autocomplete('inp-hero-room-c', 'sug-hero-room-c', 'teams', null);
 
@@ -534,6 +535,10 @@ $('back-from-dreamteam')?.addEventListener('click', () => showView('view-home'))
 $('back-from-jury')?.addEventListener('click', () => showView('view-home'));
 $('back-from-room')?.addEventListener('click', () => showView('view-home'));
 $('back-from-live2026')?.addEventListener('click', () => showView('view-home'));
+$('btn-hero-26')?.addEventListener('click', () => {
+  const name = getHero26?.();
+  if (name) loadProfile(name);
+});
 $('back-from-hub')?.addEventListener('click', () => showView('view-home'));
 $('back-from-rankings')?.addEventListener('click', () => showView('view-home'));
 $('back-from-duel-setup')?.addEventListener('click', () => showView(_duelSetupBackTarget));
@@ -3723,6 +3728,38 @@ function renderLive2026(data) {
     </div>`;
   }).join('');
 
+  const learnedSection = `
+    <div class="lv26-learned">
+      <div class="lv26-learned-title">What We Learned</div>
+
+      <div class="lv26-learned-item">
+        <div class="lv26-learned-label">The model beat random chance — but not by a lot</div>
+        <div class="lv26-learned-text">At 59.1% across 44 rooms, the model outperformed a naive random predictor (which would be right ~35–40% of the time across 3- and 4-team rooms). That gap confirms that historical IYPT performance carries real signal. But only partial signal — this is closer to weather forecasting than physics.</div>
+      </div>
+
+      <div class="lv26-learned-item">
+        <div class="lv26-learned-label">Round 2 was the sweet spot (72.7%), Round 3 the worst (45.5%)</div>
+        <div class="lv26-learned-text">In Round 2, teams had just enough in-tournament data to confirm or deny their historical profile, and the pairings hadn't yet concentrated the strongest teams together. By Round 3, matchups became harder to call as the field compressed. The variance in per-round accuracy (45–73%) is itself telling: a single round's result is close to a coin flip regardless of model quality.</div>
+      </div>
+
+      <div class="lv26-learned-item">
+        <div class="lv26-learned-label">Sparse encounter history was the biggest failure mode</div>
+        <div class="lv26-learned-text">Many rooms had 0–3 prior meetings between the teams involved. With that little data, the model was essentially guessing. The worst misses — South Africa in R1, Hong Kong beating Bulgaria (given 14.7%) in R3, South Africa beating Poland (given 18.8%) in R3 — all came from rooms where historical data was thin or nonexistent.</div>
+      </div>
+
+      <div class="lv26-learned-item">
+        <div class="lv26-learned-label">Some teams were systematically underrated</div>
+        <div class="lv26-learned-text">Hong Kong beat two historically stronger opponents (Sweden R1, Bulgaria R3). Czechia won 3 fights against higher-predicted teams across Rounds 2, 3, and 4. Georgia pulled off 2 surprise wins in Rounds 3 and 4. These patterns suggest those teams peaked this year — exactly the kind of in-year form that historical averages cannot capture.</div>
+      </div>
+
+      <div class="lv26-learned-item">
+        <div class="lv26-learned-label">The fundamental limit: IYPT teams are not the same team year over year</div>
+        <div class="lv26-learned-text">The deepest structural problem is that IYPT teams turn over their entire roster every cycle. "Germany 2026" and "Germany 2019" share a flag, not a squad. The model assumes stationarity — that historical win rates predict future win rates — but this assumption breaks down when team composition changes completely. No amount of additional historical data can fix this: it's a feature of the competition format, not a data problem.</div>
+      </div>
+
+      <div class="lv26-learned-note">⚠️ Rounds 5 and Final results pending — this dashboard covers 44 rooms across Rounds 1–4 only.</div>
+    </div>`;
+
   return `
     <div class="lv26-wrap">
       <div class="lv26-header">
@@ -3740,5 +3777,6 @@ function renderLive2026(data) {
         <span class="lv26-upset-tag">UPSET</span> = we gave &lt;30% to winner
       </div>
       ${byRound}
+      ${learnedSection}
     </div>`;
 }
