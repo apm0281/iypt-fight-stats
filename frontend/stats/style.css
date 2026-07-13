@@ -1011,3 +1011,47 @@ details[open] .rm-history-toggle::before { transform: rotate(90deg); }
 .lv26-room-verdict { font-size: .75rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px; }
 .lv26-verdict-pred strong, .lv26-verdict-act strong { color: var(--text); }
 .lv26-no-data { font-size: .68rem; background: var(--border); border-radius: 4px; padding: 1px 5px; }
+
+/* ── IYPT 2026 hero card ──────────────────────────────────────────────────── */
+.mode-card-iypt26 { border-top: 3px solid var(--green); }
+.mode-card-iypt26 .mode-title { color: var(--green); }
+
+/* ── What We Learned section ─────────────────────────────────────────────── */
+.lv26-learned {
+  margin-top: 32px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid var(--border);
+}
+.lv26-learned-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.lv26-learned-item {
+  margin-bottom: 18px;
+}
+.lv26-learned-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--accent);
+  margin-bottom: 5px;
+}
+.lv26-learned-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.lv26-learned-note {
+  margin-top: 20px;
+  padding: 10px 14px;
+  background: rgba(255,200,0,0.08);
+  border-left: 3px solid #f0b429;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
