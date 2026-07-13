@@ -1,7 +1,33 @@
 {
-  "correct": 26,
-  "total": 44,
-  "accuracy": 59.1,
+  "correct": 33,
+  "total": 56,
+  "accuracy": 58.9,
+  "round_stats": {
+    "1": {
+      "correct": 6,
+      "total": 11
+    },
+    "2": {
+      "correct": 8,
+      "total": 11
+    },
+    "3": {
+      "correct": 5,
+      "total": 11
+    },
+    "4": {
+      "correct": 6,
+      "total": 11
+    },
+    "5": {
+      "correct": 7,
+      "total": 11
+    },
+    "Final": {
+      "correct": 1,
+      "total": 1
+    }
+  },
   "rooms": [
     {
       "round": 1,
@@ -1087,9 +1113,9 @@
       ],
       "predicted_winner": "China",
       "predicted_pct": 59.2,
-      "actual_winner": "China",
-      "actual_pct": 59.2,
-      "correct": true,
+      "actual_winner": "Chinese Taipei",
+      "actual_pct": 17.1,
+      "correct": false,
       "n_encounters": 10,
       "n_teams": 4
     },
@@ -1361,6 +1387,376 @@
       "actual_pct": 52.3,
       "correct": true,
       "n_encounters": 2,
+      "n_teams": 3
+    },
+    {
+      "round": 5,
+      "room": "A",
+      "teams": [
+        "Japan",
+        "Hong Kong",
+        "Georgia",
+        "Czechia"
+      ],
+      "team_probs": [
+        {
+          "team": "Czechia",
+          "prob": 31.1
+        },
+        {
+          "team": "Japan",
+          "prob": 24.7
+        },
+        {
+          "team": "Hong Kong",
+          "prob": 24.7
+        },
+        {
+          "team": "Georgia",
+          "prob": 19.6
+        }
+      ],
+      "predicted_winner": "Czechia",
+      "predicted_pct": 31.1,
+      "actual_winner": "Hong Kong",
+      "actual_pct": 24.7,
+      "correct": false,
+      "n_encounters": 2,
+      "n_teams": 4
+    },
+    {
+      "round": 5,
+      "room": "B",
+      "teams": [
+        "Ukraine",
+        "Austria",
+        "Croatia",
+        "Italy"
+      ],
+      "team_probs": [
+        {
+          "team": "Ukraine",
+          "prob": 32.5
+        },
+        {
+          "team": "Italy",
+          "prob": 29.3
+        },
+        {
+          "team": "Austria",
+          "prob": 26.6
+        },
+        {
+          "team": "Croatia",
+          "prob": 11.5
+        }
+      ],
+      "predicted_winner": "Ukraine",
+      "predicted_pct": 32.5,
+      "actual_winner": "Austria",
+      "actual_pct": 26.6,
+      "correct": false,
+      "n_encounters": 4,
+      "n_teams": 4
+    },
+    {
+      "round": 5,
+      "room": "C",
+      "teams": [
+        "Pakistan",
+        "Chinese Taipei",
+        "New Zealand"
+      ],
+      "team_probs": [
+        {
+          "team": "Chinese Taipei",
+          "prob": 53.6
+        },
+        {
+          "team": "New Zealand",
+          "prob": 37.5
+        },
+        {
+          "team": "Pakistan",
+          "prob": 8.9
+        }
+      ],
+      "predicted_winner": "Chinese Taipei",
+      "predicted_pct": 53.6,
+      "actual_winner": "Chinese Taipei",
+      "actual_pct": 53.6,
+      "correct": true,
+      "n_encounters": 7,
+      "n_teams": 3
+    },
+    {
+      "round": 5,
+      "room": "D",
+      "teams": [
+        "Greece",
+        "Bulgaria",
+        "Kazakhstan"
+      ],
+      "team_probs": [
+        {
+          "team": "Bulgaria",
+          "prob": 45.4
+        },
+        {
+          "team": "Kazakhstan",
+          "prob": 32.0
+        },
+        {
+          "team": "Greece",
+          "prob": 22.6
+        }
+      ],
+      "predicted_winner": "Bulgaria",
+      "predicted_pct": 45.4,
+      "actual_winner": "Bulgaria",
+      "actual_pct": 45.4,
+      "correct": true,
+      "n_encounters": 1,
+      "n_teams": 3
+    },
+    {
+      "round": 5,
+      "room": "E",
+      "teams": [
+        "China",
+        "Serbia",
+        "Thailand"
+      ],
+      "team_probs": [
+        {
+          "team": "China",
+          "prob": 76.1
+        },
+        {
+          "team": "Serbia",
+          "prob": 15.5
+        },
+        {
+          "team": "Thailand",
+          "prob": 8.4
+        }
+      ],
+      "predicted_winner": "China",
+      "predicted_pct": 76.1,
+      "actual_winner": "China",
+      "actual_pct": 76.1,
+      "correct": true,
+      "n_encounters": 6,
+      "n_teams": 3
+    },
+    {
+      "round": 5,
+      "room": "F",
+      "teams": [
+        "Slovakia",
+        "Singapore",
+        "Germany"
+      ],
+      "team_probs": [
+        {
+          "team": "Singapore",
+          "prob": 79.1
+        },
+        {
+          "team": "Germany",
+          "prob": 15.9
+        },
+        {
+          "team": "Slovakia",
+          "prob": 4.9
+        }
+      ],
+      "predicted_winner": "Singapore",
+      "predicted_pct": 79.1,
+      "actual_winner": "Singapore",
+      "actual_pct": 79.1,
+      "correct": true,
+      "n_encounters": 11,
+      "n_teams": 3
+    },
+    {
+      "round": 5,
+      "room": "G",
+      "teams": [
+        "United Kingdom",
+        "India",
+        "Brazil"
+      ],
+      "team_probs": [
+        {
+          "team": "Brazil",
+          "prob": 72.1
+        },
+        {
+          "team": "United Kingdom",
+          "prob": 20.5
+        },
+        {
+          "team": "India",
+          "prob": 7.4
+        }
+      ],
+      "predicted_winner": "Brazil",
+      "predicted_pct": 72.1,
+      "actual_winner": "India",
+      "actual_pct": 7.4,
+      "correct": false,
+      "n_encounters": 7,
+      "n_teams": 3
+    },
+    {
+      "round": 5,
+      "room": "H",
+      "teams": [
+        "Nepal",
+        "Hungary",
+        "Switzerland"
+      ],
+      "team_probs": [
+        {
+          "team": "Switzerland",
+          "prob": 62.5
+        },
+        {
+          "team": "Nepal",
+          "prob": 19.8
+        },
+        {
+          "team": "Hungary",
+          "prob": 17.8
+        }
+      ],
+      "predicted_winner": "Switzerland",
+      "predicted_pct": 62.5,
+      "actual_winner": "Switzerland",
+      "actual_pct": 62.5,
+      "correct": true,
+      "n_encounters": 3,
+      "n_teams": 3
+    },
+    {
+      "round": 5,
+      "room": "I",
+      "teams": [
+        "Korea",
+        "South Africa",
+        "Canada"
+      ],
+      "team_probs": [
+        {
+          "team": "Korea",
+          "prob": 51.4
+        },
+        {
+          "team": "Canada",
+          "prob": 26.6
+        },
+        {
+          "team": "South Africa",
+          "prob": 22.0
+        }
+      ],
+      "predicted_winner": "Korea",
+      "predicted_pct": 51.4,
+      "actual_winner": "Korea",
+      "actual_pct": 51.4,
+      "correct": true,
+      "n_encounters": 3,
+      "n_teams": 3
+    },
+    {
+      "round": 5,
+      "room": "J",
+      "teams": [
+        "Sweden",
+        "Romania",
+        "Mexico"
+      ],
+      "team_probs": [
+        {
+          "team": "Sweden",
+          "prob": 67.6
+        },
+        {
+          "team": "Romania",
+          "prob": 17.9
+        },
+        {
+          "team": "Mexico",
+          "prob": 14.5
+        }
+      ],
+      "predicted_winner": "Sweden",
+      "predicted_pct": 67.6,
+      "actual_winner": "Sweden",
+      "actual_pct": 67.6,
+      "correct": true,
+      "n_encounters": 4,
+      "n_teams": 3
+    },
+    {
+      "round": 5,
+      "room": "K",
+      "teams": [
+        "USA",
+        "Australia",
+        "Poland"
+      ],
+      "team_probs": [
+        {
+          "team": "Poland",
+          "prob": 75.8
+        },
+        {
+          "team": "Australia",
+          "prob": 17.1
+        },
+        {
+          "team": "USA",
+          "prob": 7.0
+        }
+      ],
+      "predicted_winner": "Poland",
+      "predicted_pct": 75.8,
+      "actual_winner": "USA",
+      "actual_pct": 7.0,
+      "correct": false,
+      "n_encounters": 7,
+      "n_teams": 3
+    },
+    {
+      "round": "Final",
+      "room": "F",
+      "teams": [
+        "China",
+        "Korea",
+        "Singapore"
+      ],
+      "team_probs": [
+        {
+          "team": "Singapore",
+          "prob": 72.1
+        },
+        {
+          "team": "Korea",
+          "prob": 15.7
+        },
+        {
+          "team": "China",
+          "prob": 12.2
+        }
+      ],
+      "predicted_winner": "Singapore",
+      "predicted_pct": 72.1,
+      "actual_winner": "Singapore",
+      "actual_pct": 72.1,
+      "correct": true,
+      "n_encounters": 6,
       "n_teams": 3
     }
   ]

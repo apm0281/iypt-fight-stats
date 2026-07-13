@@ -484,6 +484,9 @@ const getHero26 = autocomplete('inp-hero-26', 'sug-hero-26', 'participants', nul
 const getHeroRoomB = autocomplete('inp-hero-room-b', 'sug-hero-room-b', 'teams', null);
 const getHeroRoomC = autocomplete('inp-hero-room-c', 'sug-hero-room-c', 'teams', null);
 
+// IYPT 2026 featured fighter search
+const get2026P = autocomplete('inp-2026-p', 'sug-2026-p', 'participants', null);
+
 // "I competed" card sub-action inputs
 const getCardDuelA = autocomplete('inp-card-duel-a', 'sug-card-duel-a', 'participants', null);
 const getCardDuelB = autocomplete('inp-card-duel-b', 'sug-card-duel-b', 'participants', null);
@@ -509,6 +512,15 @@ $('btn-participant')?.addEventListener('click', () => {
 });
 
 // Hero mode card buttons
+$('btn-2026-p')?.addEventListener('click', () => {
+  const name = get2026P();
+  if (!name) { showError('Enter your name'); return; }
+  loadCompetitorHub(name);
+});
+$('btn-toggle-simulate')?.addEventListener('click', () => {
+  const wrap = $('room-inputs-wrap');
+  if (wrap) wrap.classList.toggle('hidden');
+});
 $('btn-hero-p')?.addEventListener('click', () => {
   const name = getHeroP();
   if (!name) { showError('Enter your name'); return; }
@@ -3674,42 +3686,44 @@ async function loadLive2026() {
 }
 
 function renderLive2026(data) {
-  const { correct, total, accuracy, rooms } = data;
-  const rounds = [1, 2, 3, 4];
+  const { correct, total, accuracy, round_stats, rooms } = data;
 
-  const roundStats = rounds.map(r => {
-    const rms = rooms.filter(x => x.round === r);
-    const c = rms.filter(x => x.correct).length;
-    return { round: r, correct: c, total: rms.length, pct: Math.round(c / rms.length * 100) };
+  const roundKeys = Object.keys(round_stats).sort((a, b) => {
+    if (a === 'Final') return 1;
+    if (b === 'Final') return -1;
+    return Number(a) - Number(b);
   });
 
-  const roundBadges = roundStats.map(s => {
-    const cls = s.pct >= 70 ? 'lv26-badge-high' : s.pct >= 50 ? 'lv26-badge-mid' : 'lv26-badge-low';
+  const roundBadges = roundKeys.map(k => {
+    const s = round_stats[k];
+    const pct = Math.round(s.correct / s.total * 100);
+    const cls = pct >= 70 ? 'lv26-badge-high' : pct >= 50 ? 'lv26-badge-mid' : 'lv26-badge-low';
+    const label = k === 'Final' ? 'Final' : `Round ${k}`;
     return `<div class="lv26-round-badge ${cls}">
-      <div class="lv26-rb-label">Round ${s.round}</div>
+      <div class="lv26-rb-label">${label}</div>
       <div class="lv26-rb-score">${s.correct}/${s.total}</div>
-      <div class="lv26-rb-pct">${s.pct}%</div>
+      <div class="lv26-rb-pct">${pct}%</div>
     </div>`;
   }).join('');
 
   const overallCls = accuracy >= 70 ? 'lv26-acc-high' : accuracy >= 50 ? 'lv26-acc-mid' : 'lv26-acc-low';
 
   const roomRows = rooms.map(rm => {
-    const topPred = rm.team_probs[0];
-    const correct = rm.correct;
-    const upset = !correct && rm.actual_pct < 30;
+    const isCorrect = rm.correct;
+    const upset = !isCorrect && rm.actual_pct < 30;
+    const roomLabel = rm.round === 'Final' ? 'Final' : `R${rm.round}${rm.room}`;
     const teamChips = rm.team_probs.map(tp => {
       const isWinner = tp.team === rm.actual_winner;
       const isPred = tp.team === rm.predicted_winner;
       const flag = countryFlag(tp.team) || '';
-      return `<span class="lv26-chip ${isWinner ? 'lv26-chip-winner' : ''} ${isPred && !correct ? 'lv26-chip-wrong-pred' : ''}"
+      return `<span class="lv26-chip ${isWinner ? 'lv26-chip-winner' : ''} ${isPred && !isCorrect ? 'lv26-chip-wrong-pred' : ''}"
         data-team="${tp.team}" style="cursor:pointer">${flag} ${tp.team} <span class="lv26-chip-pct">${tp.prob}%</span></span>`;
     }).join('');
 
-    return `<div class="lv26-room ${correct ? 'lv26-room-ok' : 'lv26-room-miss'} ${upset ? 'lv26-room-upset' : ''}">
+    return `<div class="lv26-room ${isCorrect ? 'lv26-room-ok' : 'lv26-room-miss'} ${upset ? 'lv26-room-upset' : ''}">
       <div class="lv26-room-head">
-        <span class="lv26-room-label">R${rm.round}${rm.room}</span>
-        <span class="lv26-result-icon">${correct ? '✓' : '✗'}</span>
+        <span class="lv26-room-label">${roomLabel}</span>
+        <span class="lv26-result-icon">${isCorrect ? '✓' : '✗'}</span>
         ${upset ? '<span class="lv26-upset-tag">UPSET</span>' : ''}
       </div>
       <div class="lv26-chip-row">${teamChips}</div>
@@ -3721,51 +3735,56 @@ function renderLive2026(data) {
     </div>`;
   });
 
-  const byRound = rounds.map(r => {
-    const rRooms = roomRows.filter((_, i) => rooms[i].round === r);
+  const byRound = roundKeys.map(k => {
+    const label = k === 'Final' ? 'Final' : `Round ${k}`;
+    const rRooms = roomRows.filter((_, i) => String(rooms[i].round) === k);
     return `<div class="lv26-round-section">
-      <div class="lv26-round-title">Round ${r}</div>
+      <div class="lv26-round-title">${label}</div>
       <div class="lv26-rooms-grid">${rRooms.join('')}</div>
     </div>`;
   }).join('');
 
-  const learnedSection = `
-    <div class="lv26-learned">
-      <div class="lv26-learned-title">What We Learned</div>
-
-      <div class="lv26-learned-item">
-        <div class="lv26-learned-label">The model beat random chance — but not by a lot</div>
-        <div class="lv26-learned-text">At 59.1% across 44 rooms, the model outperformed a naive random predictor (which would be right ~35–40% of the time across 3- and 4-team rooms). That gap confirms that historical IYPT performance carries real signal. But only partial signal — this is closer to weather forecasting than physics.</div>
+  const wtl = `
+    <div class="lv26-wtl">
+      <div class="lv26-wtl-title">What We Learned</div>
+      <div class="lv26-wtl-lead">
+        <strong>${accuracy}% accuracy across ${total} rooms</strong> — nearly double the ~30% random baseline
+        (a mix of ⅓ for 3-team and ¼ for 4-team rooms). A simple pairwise model extracts real signal from history.
       </div>
-
-      <div class="lv26-learned-item">
-        <div class="lv26-learned-label">Round 2 was the sweet spot (72.7%), Round 3 the worst (45.5%)</div>
-        <div class="lv26-learned-text">In Round 2, teams had just enough in-tournament data to confirm or deny their historical profile, and the pairings hadn't yet concentrated the strongest teams together. By Round 3, matchups became harder to call as the field compressed. The variance in per-round accuracy (45–73%) is itself telling: a single round's result is close to a coin flip regardless of model quality.</div>
+      <div class="lv26-wtl-grid">
+        <div class="lv26-wtl-card lv26-wtl-ok">
+          <div class="lv26-wtl-card-title">✓ Where it worked</div>
+          <p>High-coverage rooms drove accuracy. Singapore had ~50 prior encounters in the database — the model called them correctly in R1, R2, R3, R4, and the Final. Strong historical data equals strong predictions.</p>
+          <p style="margin-top:6px">Round 2 was the sweet spot at 73%: teams had just enough in-tournament data to confirm their historical profile, and the field hadn't yet compressed. By Round 3 (45%), the strongest teams were meeting each other and the calls got harder.</p>
+        </div>
+        <div class="lv26-wtl-card lv26-wtl-miss">
+          <div class="lv26-wtl-card-title">✗ Where it struggled</div>
+          <ul class="lv26-wtl-list">
+            <li><strong>Zero-data pairs:</strong> many country combinations had never met. Unknown pairs default to 50/50 — those rooms are coin flips that dilute overall accuracy.</li>
+            <li><strong>Middle-tier volatility:</strong> teams ranked ~10–25 had the highest round-score variance (avg σ ≈ 3.0 vs top σ ≈ 1.9). A team playing their ace problem as Reporter can spike 8–10 pts above their mean — a hidden action the model cannot see.</li>
+            <li><strong>In-year form:</strong> Hong Kong beat Sweden and Bulgaria. Czechia won 3 rooms against stronger-rated teams. Georgia pulled 2 upsets. These teams peaked in 2026 — exactly what historical averages cannot predict.</li>
+          </ul>
+        </div>
+        <div class="lv26-wtl-card lv26-wtl-structural">
+          <div class="lv26-wtl-card-title">⚙ Why IYPT is structurally hard to predict</div>
+          <ul class="lv26-wtl-list">
+            <li>Individual jurors appear across multiple panels — one juror's calibration creates cross-fight correlation that panel-level modeling misses entirely.</li>
+            <li>Problem selection is a hidden action: you don't know whether a team is playing their strongest problem until the fight starts.</li>
+            <li>"Germany 2026" and "Germany 2019" share a flag, not a squad. Teams turn over their entire roster every cycle — the model assumes stationarity that the format doesn't provide.</li>
+          </ul>
+        </div>
+        <div class="lv26-wtl-card lv26-wtl-next">
+          <div class="lv26-wtl-card-title">→ What would improve it</div>
+          <p>Per-role modeling (Reporter / Opponent / Reviewer separately), juror-level fixed effects, and a signal encoding whether a team has a known ace problem booked as Reporter for that round. Even then, the team-turnover problem is a feature of the format — not a data problem.</p>
+        </div>
       </div>
-
-      <div class="lv26-learned-item">
-        <div class="lv26-learned-label">Sparse encounter history was the biggest failure mode</div>
-        <div class="lv26-learned-text">Many rooms had 0–3 prior meetings between the teams involved. With that little data, the model was essentially guessing. The worst misses — South Africa in R1, Hong Kong beating Bulgaria (given 14.7%) in R3, South Africa beating Poland (given 18.8%) in R3 — all came from rooms where historical data was thin or nonexistent.</div>
-      </div>
-
-      <div class="lv26-learned-item">
-        <div class="lv26-learned-label">Some teams were systematically underrated</div>
-        <div class="lv26-learned-text">Hong Kong beat two historically stronger opponents (Sweden R1, Bulgaria R3). Czechia won 3 fights against higher-predicted teams across Rounds 2, 3, and 4. Georgia pulled off 2 surprise wins in Rounds 3 and 4. These patterns suggest those teams peaked this year — exactly the kind of in-year form that historical averages cannot capture.</div>
-      </div>
-
-      <div class="lv26-learned-item">
-        <div class="lv26-learned-label">The fundamental limit: IYPT teams are not the same team year over year</div>
-        <div class="lv26-learned-text">The deepest structural problem is that IYPT teams turn over their entire roster every cycle. "Germany 2026" and "Germany 2019" share a flag, not a squad. The model assumes stationarity — that historical win rates predict future win rates — but this assumption breaks down when team composition changes completely. No amount of additional historical data can fix this: it's a feature of the competition format, not a data problem.</div>
-      </div>
-
-      <div class="lv26-learned-note">⚠️ Rounds 5 and Final results pending — this dashboard covers 44 rooms across Rounds 1–4 only.</div>
     </div>`;
 
   return `
     <div class="lv26-wrap">
       <div class="lv26-header">
         <div class="lv26-title">IYPT 2026 · Prediction Accuracy</div>
-        <div class="lv26-subtitle">Rounds 1–4 · ${total} rooms compared</div>
+        <div class="lv26-subtitle">Rounds 1–5 + Final · ${total} rooms compared</div>
       </div>
       <div class="lv26-overall">
         <div class="lv26-acc-number ${overallCls}">${accuracy}%</div>
@@ -3778,6 +3797,6 @@ function renderLive2026(data) {
         <span class="lv26-upset-tag">UPSET</span> = we gave &lt;30% to winner
       </div>
       ${byRound}
-      ${learnedSection}
+      ${wtl}
     </div>`;
 }

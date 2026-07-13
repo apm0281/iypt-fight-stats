@@ -15,7 +15,7 @@
   <link rel="icon" href="favicon-fightstats.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=52" />
+  <link rel="stylesheet" href="style.css?v=53" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -37,27 +37,43 @@
           <div class="mode-card-info">
             <div class="mode-icon">🏆</div>
             <div class="mode-title">FIGHTERS: Check your stats!</div>
-            <div class="mode-desc">You fought in Switzerland. Now see how history remembers it — your scores, rankings, and fight record from IYPT 2026 are live.</div>
-            <span class="featured-badge">🇨🇭 IYPT 2026 · Switzerland · New!</span>
+            <div class="mode-desc">Singapore won! Find yourself in the database — see how your scores compare against 9 years of IYPT fighters.</div>
+            <span class="featured-badge">🇨🇭 IYPT 2026 · Baar, Switzerland · concluded</span>
           </div>
           <div class="mode-ctas">
-            <div class="autocomplete-wrap">
-              <input id="inp-hero-26" type="text" placeholder="Your name…" autocomplete="off" />
-              <ul id="sug-hero-26" class="suggestions hidden"></ul>
+            <div class="card-primary-action">
+              <div class="autocomplete-wrap">
+                <input id="inp-2026-p" type="text" placeholder="Your name…" autocomplete="off" />
+                <ul id="sug-2026-p" class="suggestions hidden"></ul>
+              </div>
+              <button id="btn-2026-p" class="btn-primary">Find My Profile</button>
             </div>
-            <button id="btn-hero-26" class="btn-primary btn-primary-room">FIND MY STATS</button>
+            <div class="featured-simulate-toggle">
+              <button id="btn-toggle-simulate" class="btn-sub">🎲 Simulate a Round instead</button>
+            </div>
+            <div id="room-inputs-wrap" class="hidden">
+              <div class="room-inputs" id="room-inputs">
+                <div class="autocomplete-wrap">
+                  <input id="inp-hero-room-a" type="text" placeholder="Team A…" autocomplete="off" />
+                  <ul id="sug-hero-room-a" class="suggestions hidden"></ul>
+                </div>
+                <div class="autocomplete-wrap">
+                  <input id="inp-hero-room-b" type="text" placeholder="Team B…" autocomplete="off" />
+                  <ul id="sug-hero-room-b" class="suggestions hidden"></ul>
+                </div>
+                <div class="autocomplete-wrap">
+                  <input id="inp-hero-room-c" type="text" placeholder="Team C…" autocomplete="off" />
+                  <ul id="sug-hero-room-c" class="suggestions hidden"></ul>
+                </div>
+              </div>
+              <button id="btn-hero-room" class="btn-primary btn-primary-room">RUN SIMULATION</button>
+              <div class="room-locked-banner hidden" id="room-locked-banner">
+                <span class="rlb-icon">🔒</span>
+                <span class="rlb-headline">Opens July 6 — first fight of the competition</span>
+                <span class="rlb-sub">Enjoy the rest of the site until then!</span>
+              </div>
+            </div>
           </div>
-        </div>
-        <!-- Hidden inputs kept for JS compat -->
-        <div style="display:none">
-          <input id="inp-hero-room-a" /><ul id="sug-hero-room-a"></ul>
-          <input id="inp-hero-room-b" /><ul id="sug-hero-room-b"></ul>
-          <input id="inp-hero-room-c" /><ul id="sug-hero-room-c"></ul>
-          <button id="btn-hero-room"></button>
-          <div id="room-inputs"></div>
-          <div id="room-locked-banner"></div>
-          <span id="iypt-countdown"></span>
-          <div id="iypt-schedule"></div>
         </div>
       </div>
 
@@ -477,6 +493,6 @@ document.querySelectorAll('.card-sub-tab').forEach(btn => {
   });
 });
 </script>
-<script src="app.js?v=54"></script>
+<script src="app.js?v=55"></script>
 </body>
 </html>
