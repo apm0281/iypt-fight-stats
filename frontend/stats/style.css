@@ -1013,8 +1013,35 @@ details[open] .rm-history-toggle::before { transform: rotate(90deg); }
 .lv26-no-data { font-size: .68rem; background: var(--border); border-radius: 4px; padding: 1px 5px; }
 
 /* ── IYPT 2026 hero card ──────────────────────────────────────────────────── */
-.mode-card-iypt26 { border-top: 3px solid var(--green); }
-.mode-card-iypt26 .mode-title { color: var(--green); }
+/* Swiss red/white theme for IYPT 2026 hero card */
+:root { --swiss-red: #D52B1E; }
+.mode-card-iypt26 {
+  border: 2px solid var(--swiss-red);
+  border-top: 4px solid var(--swiss-red);
+  background: #fff;
+}
+.mode-card-iypt26 .mode-title { color: var(--swiss-red); font-weight: 800; }
+.mode-card-iypt26 .mode-desc { color: #333; }
+.mode-card-iypt26 .featured-badge {
+  background: var(--swiss-red) !important;
+  color: #fff !important;
+}
+.mode-card-iypt26 #inp-hero-26 {
+  border: 1.5px solid var(--swiss-red);
+  background: #fff;
+  color: #111;
+}
+.mode-card-iypt26 #inp-hero-26:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(213,43,30,0.18);
+}
+.mode-card-iypt26 .btn-primary-room {
+  background: var(--swiss-red) !important;
+  color: #fff !important;
+}
+.mode-card-iypt26 .btn-primary-room:hover {
+  background: #b52318 !important;
+}
 
 /* ── What We Learned section ─────────────────────────────────────────────── */
 .lv26-learned {
