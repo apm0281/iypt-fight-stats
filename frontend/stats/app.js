@@ -517,6 +517,9 @@ $('btn-2026-p')?.addEventListener('click', () => {
   if (!name) { showError('Enter your name'); return; }
   loadCompetitorHub(name);
 });
+document.querySelectorAll('.fun26-item[data-participant]').forEach(el => {
+  el.addEventListener('click', () => loadCompetitorHub(el.dataset.participant));
+});
 $('btn-toggle-simulate')?.addEventListener('click', () => {
   const wrap = $('room-inputs-wrap');
   if (wrap) wrap.classList.toggle('hidden');
