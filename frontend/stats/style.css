@@ -1034,9 +1034,13 @@ details[open] .rm-history-toggle::before { transform: rotate(90deg); }
 .fun26-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(213,43,30,.1); cursor: pointer; transition: background .12s; }
 .fun26-item:last-child { border-bottom: none; }
 .fun26-item:hover .fun26-name { color: var(--swiss-red); }
+.fun26-card-wide { grid-column: 1 / -1; }
+.fun26-list-2col { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; }
+@media (max-width: 520px) { .fun26-list-2col { grid-template-columns: 1fr; } }
 .fun26-rank { font-size: .7rem; font-weight: 700; color: var(--muted); width: 18px; flex-shrink: 0; }
 .fun26-name { flex: 1; font-size: .83rem; font-weight: 500; }
-.fun26-val { font-size: .83rem; font-weight: 700; color: var(--swiss-red); }
+.fun26-val { font-size: .83rem; font-weight: 700; color: var(--swiss-red); white-space: nowrap; }
+.fun26-ctx { font-size: .68rem; color: var(--muted); white-space: nowrap; margin-left: 4px; }
 .mode-card-iypt26 input[type="text"] { border-color: #f0b8b4 !important; color: #1a0505; }
 .mode-card-iypt26 input[type="text"]:focus { border-color: var(--swiss-red) !important; }
 .mode-card-iypt26 input::placeholder { color: #c08888 !important; }
