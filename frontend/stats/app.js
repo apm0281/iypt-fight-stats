@@ -104,7 +104,7 @@
 
 // Static mode: on GitHub Pages (or any non-localhost host), read pre-exported JSON files.
 // On localhost, hit the Python backend directly.
-const STATIC = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+const STATIC = true; // TEMP: revert after demo recording
 
 // ── Utility ──────────────────────────────────────────────────────────────────
 
