@@ -371,6 +371,16 @@
       color: var(--accent);
       border: 1px solid var(--border);
     }
+    .card-linkedin {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      opacity: .7;
+    }
+    .card-linkedin:hover { opacity: 1; text-decoration: underline; }
 
     /* ── EMPTY ── */
     .empty-state {
@@ -485,6 +495,100 @@
 //  photo: URL da imagem (pode ser relativa ou absoluta), ou null para usar iniciais.
 // ─────────────────────────────────────────────────────
 const ALUMNI = [
+  // ── 2026 ─────────────────────────────────────────────
+  {
+    name: "Pedro Magalhães Fernandes Batista",
+    year: 2026,
+    course: "Ensino Médio",
+    university: "",
+    phrase: null,
+    areas: ["Física & Ciências Exatas"],
+    photo: null,
+    social: null
+  },
+  {
+    name: "Heitor Nunes Silva",
+    year: 2026,
+    course: "Ensino Médio",
+    university: "",
+    phrase: null,
+    areas: ["Física & Ciências Exatas"],
+    photo: null,
+    social: null
+  },
+  {
+    name: "William Toshiyuki Kotsubo",
+    year: 2026,
+    course: "Ensino Médio",
+    university: "",
+    phrase: null,
+    areas: ["Física & Ciências Exatas"],
+    photo: null,
+    social: null
+  },
+  // ── 2025 ─────────────────────────────────────────────
+  {
+    name: "Gustavo Silva Bastos de Almeida",
+    year: 2025,
+    course: "Estudante",
+    university: "",
+    phrase: null,
+    areas: ["Física & Ciências Exatas"],
+    photo: null,
+    social: { linkedin: "https://www.linkedin.com/in/gustavo-bastos-1255323b3" }
+  },
+  {
+    name: "André Windisch Olenscki",
+    year: 2025,
+    course: "Engenharia",
+    university: "",
+    phrase: null,
+    areas: ["Engenharia", "Física & Ciências Exatas"],
+    photo: null,
+    social: { linkedin: "https://www.linkedin.com/in/andre-olenscki-a5202b2ab" }
+  },
+  // ── 2024 ─────────────────────────────────────────────
+  {
+    name: "Guilherme Leonelo Barison",
+    year: 2024,
+    course: "Física",
+    university: "",
+    phrase: null,
+    areas: ["Física & Ciências Exatas", "Pesquisa & Academia"],
+    photo: null,
+    social: null
+  },
+  {
+    name: "Ana Beatriz Bandeira Martins",
+    year: 2024,
+    course: "Estudante",
+    university: "",
+    phrase: null,
+    areas: ["Física & Ciências Exatas"],
+    photo: null,
+    social: null
+  },
+  {
+    name: "Gregory Almeida Dias do Rosario",
+    year: 2024,
+    course: "Física",
+    university: "",
+    phrase: null,
+    areas: ["Física & Ciências Exatas", "Pesquisa & Academia"],
+    photo: null,
+    social: null
+  },
+  {
+    name: "Vitor Takashi Hideshima",
+    year: 2024,
+    course: "Estudante de Graduação",
+    university: "",
+    phrase: null,
+    areas: ["Física & Ciências Exatas", "Pesquisa & Academia"],
+    photo: null,
+    social: { linkedin: "https://www.linkedin.com/in/vitor-takashi" }
+  },
+  // ── 2023 ─────────────────────────────────────────────
   {
     name: "José Eleutério",
     year: 2023,
@@ -492,79 +596,111 @@ const ALUMNI = [
     course: "Physics",
     phrase: "O torneio foi a parte principal que me fez conquistar essa aprovação.",
     areas: ["Física & Ciências Exatas", "Pesquisa & Academia", "Carreira Internacional"],
-    photo: null
+    photo: null,
+    social: null
   },
+  {
+    name: "Otávio Monforte",
+    year: 2023,
+    university: "UNICAMP",
+    course: "Eng. de Computação",
+    phrase: null,
+    areas: ["Computação & Inteligência Artificial", "Empreendedorismo & Inovação"],
+    photo: null,
+    social: null
+  },
+  {
+    name: "Alan Monteiro",
+    year: 2023,
+    university: "USP",
+    course: "Eng. Elétrica",
+    phrase: null,
+    areas: ["Engenharia", "Física & Ciências Exatas"],
+    photo: null,
+    social: null
+  },
+  {
+    name: "Murilo de Andrade Porfirio",
+    year: 2023,
+    course: "Eng. Eletrônica",
+    university: "",
+    phrase: null,
+    areas: ["Engenharia", "Física & Ciências Exatas"],
+    photo: null,
+    social: { linkedin: "https://www.linkedin.com/in/murilo-de-andrade-porfirio-021351300" }
+  },
+  {
+    name: "Maria Eduarda Moura Ignacio",
+    year: 2023,
+    course: "Estudante",
+    university: "",
+    phrase: null,
+    areas: ["Física & Ciências Exatas"],
+    photo: null,
+    social: null
+  },
+  {
+    name: "Hailun Huang",
+    year: 2023,
+    course: "Física",
+    university: "",
+    phrase: null,
+    areas: ["Física & Ciências Exatas", "Pesquisa & Academia"],
+    photo: null,
+    social: null
+  },
+  {
+    name: "Lívia Tiemi Bidoia de Freitas",
+    year: 2023,
+    course: "Física",
+    university: "",
+    phrase: null,
+    areas: ["Física & Ciências Exatas", "Pesquisa & Academia"],
+    photo: null,
+    social: null
+  },
+  // ── 2022 ─────────────────────────────────────────────
+  {
+    name: "Laura Saraiva Felix",
+    year: 2022,
+    course: "Eng. de Software",
+    university: "",
+    phrase: null,
+    areas: ["Computação & Inteligência Artificial", "Engenharia"],
+    photo: null,
+    social: { linkedin: "https://www.linkedin.com/in/laurasfelix28" }
+  },
+  // ── 2020 ─────────────────────────────────────────────
+  {
+    name: "Marcus Ala Pedreira Roriz",
+    year: 2020,
+    course: "Matemática",
+    university: "UFG",
+    phrase: null,
+    areas: ["Física & Ciências Exatas", "Dados & Quantitativo", "Pesquisa & Academia"],
+    photo: null,
+    social: { linkedin: "https://www.linkedin.com/in/marcus-ala-pedreira-roriz-0542893a1" }
+  },
+  // ── 2018 ─────────────────────────────────────────────
   {
     name: "Bismarck Moreira",
     year: 2018,
-    university: "USP",
-    course: "Engenharia de Computação",
+    university: "",
+    course: "Eng. de Computação",
     phrase: "Aprendi que ciência é argumento, não apenas resposta.",
     areas: ["Computação & Inteligência Artificial", "Empreendedorismo & Inovação"],
-    photo: null
+    photo: null,
+    social: null
   },
   {
     name: "Gabriela Mendanha",
     year: 2018,
-    university: "UNICAMP",
+    university: "",
     course: "Física",
     phrase: "São esses alunos o futuro da ciência brasileira.",
     areas: ["Física & Ciências Exatas", "Educação & Ensino", "Impacto Social"],
-    photo: null
-  },
-  {
-    name: "Rafael Cunha",
-    year: 2022,
-    university: "ITA",
-    course: "Engenharia Aeronáutica",
-    phrase: "Defender uma tese diante de árbitros internacionais ensina mais do que qualquer disciplina.",
-    areas: ["Engenharia", "Pesquisa & Academia", "Física & Ciências Exatas"],
-    photo: null
-  },
-  {
-    name: "Ana Lima",
-    year: 2024,
-    university: "IMPA",
-    course: "Matemática Aplicada",
-    phrase: "O IYPT me mostrou que física experimental é tão rigorosa quanto a teoria.",
-    areas: ["Física & Ciências Exatas", "Dados & Quantitativo"],
-    photo: null
-  },
-  {
-    name: "Pedro Vasconcelos",
-    year: 2019,
-    university: "FGV",
-    course: "Economia",
-    phrase: "Sair da física pro mercado? O torneio me deu vocabulário pra ambos.",
-    areas: ["Finanças & Mercado", "Dados & Quantitativo", "Consultoria & Gestão Estratégica"],
-    photo: null
-  },
-  {
-    name: "Luisa Ferreira",
-    year: 2025,
-    university: "USP",
-    course: "Medicina",
-    phrase: "Biofísica é onde as duas partes da minha carreira se encontram.",
-    areas: ["Medicina & Biociências", "Pesquisa & Academia"],
-    photo: null
-  },
-  {
-    name: "Carlos Neto",
-    year: 2017,
-    university: "UNICAMP",
-    course: "Ciência da Computação",
-    phrase: "Competir contra trinta países te cura de qualquer medo de apresentação.",
-    areas: ["Computação & Inteligência Artificial", "Empreendedorismo & Inovação"],
-    photo: null
-  },
-  {
-    name: "Marina Souza",
-    year: 2026,
-    university: "USP",
-    course: "Física",
-    phrase: "Ainda estou processando o que é representar o Brasil na Suíça.",
-    areas: ["Física & Ciências Exatas", "Pesquisa & Academia"],
-    photo: null
+    photo: null,
+    social: null
   },
 ];
 
@@ -706,6 +842,18 @@ function render() {
       `<span class="card-area-tag">${ar}</span>`
     ).join('');
 
+    const eduHtml = (a.course || a.university)
+      ? `<div class="card-edu">${a.course ? `<span class="course">${a.course}</span>` : ''}${a.university ? `<span>${a.university}</span>` : ''}</div>`
+      : '';
+
+    const phraseHtml = a.phrase
+      ? `<p class="card-phrase">"${a.phrase}"</p>`
+      : '';
+
+    const linkedinHtml = a.social && a.social.linkedin
+      ? `<a class="card-linkedin" href="${a.social.linkedin}" target="_blank" rel="noopener">LinkedIn ↗</a>`
+      : '';
+
     return `
       <article class="alumni-card">
         <div class="card-top">
@@ -715,12 +863,9 @@ function render() {
             <span class="card-year-badge">IYPT ${a.year}</span>
           </div>
         </div>
-        <div class="card-edu">
-          <span class="course">${a.course}</span>
-          <span>${a.university}</span>
-        </div>
-        <p class="card-phrase">"${a.phrase}"</p>
+        ${eduHtml}${phraseHtml}
         <div class="card-areas">${tags}</div>
+        ${linkedinHtml}
       </article>
     `;
   }).join('');
