@@ -851,7 +851,7 @@ function render() {
     if (a.year < yearFrom || a.year > yearTo) return false;
     if (activeAreas.size > 0 && !a.areas.some(ar => activeAreas.has(ar))) return false;
     return true;
-  });
+  }).sort((a, b) => a.year - b.year);
 
   const grid     = document.getElementById('alumni-grid');
   const empty    = document.getElementById('empty-state');
