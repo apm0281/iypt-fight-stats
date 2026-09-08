@@ -217,16 +217,16 @@
     }
 
     /* Tag chips */
-    .tags-row { display: flex; flex-wrap: wrap; gap: 5px; }
+    .tags-row { display: flex; flex-wrap: wrap; gap: 4px; }
     .tag-chip {
       display: inline-flex;
       align-items: center;
-      padding: 3px 10px;
+      padding: 2px 8px;
       border-radius: 20px;
       border: 1.5px solid var(--border);
       background: var(--bg);
       font-family: inherit;
-      font-size: .69rem;
+      font-size: .64rem;
       font-weight: 700;
       color: var(--muted);
       cursor: pointer;
@@ -804,7 +804,9 @@ yearMaxEl.addEventListener('input', () => {
 
 // ── Tags setup ─────────────────────────────────────────
 const tagsRow = document.getElementById('tags-row');
-AREAS.forEach(area => {
+// Only show areas that at least one alumnus actually has
+const usedAreas = AREAS.filter(area => ALUMNI.some(a => a.areas.includes(area)));
+usedAreas.forEach(area => {
   const btn = document.createElement('button');
   btn.className = 'tag-chip';
   btn.textContent = area;
