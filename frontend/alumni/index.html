@@ -633,7 +633,7 @@ const ALUMNI = [
     university: "USP",
     course: "Eng. Elétrica",
     phrase: null,
-    areas: ["Engenharia"],
+    areas: ["Engenharia", "Consultoria & Gestão Estratégica", "Carreira Internacional"],
     photo: null,
     social: null
   },
@@ -801,9 +801,7 @@ yearMaxEl.addEventListener('input', () => {
 
 // ── Tags setup ─────────────────────────────────────────
 const tagsRow = document.getElementById('tags-row');
-// Only show areas that at least one alumnus actually has
-const usedAreas = AREAS.filter(area => ALUMNI.some(a => a.areas.includes(area)));
-usedAreas.forEach(area => {
+AREAS.forEach(area => {
   const btn = document.createElement('button');
   btn.className = 'tag-chip';
   btn.textContent = area;
