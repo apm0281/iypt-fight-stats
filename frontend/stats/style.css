@@ -1016,7 +1016,6 @@ details[open] .rm-history-toggle::before { transform: rotate(90deg); }
 :root { --swiss-red: #D52B1E; }
 .mode-card-iypt26 {
   border: 1px solid var(--border);
-  border-top: 3px solid var(--swiss-red);
   background: #fff;
   box-shadow: 0 2px 14px rgba(0,0,0,.06);
 }
@@ -1066,3 +1065,5 @@ details[open] .rm-history-toggle::before { transform: rotate(90deg); }
 
 /* ── 2026 featured card extras ───────────────── */
 .featured-simulate-toggle { text-align: center; margin-top: 10px; }
+#room-inputs-wrap:not(.hidden) { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+#room-inputs-wrap #btn-hero-room { width: 100%; }
