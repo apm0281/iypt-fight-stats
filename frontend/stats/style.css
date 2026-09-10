@@ -1015,23 +1015,23 @@ details[open] .rm-history-toggle::before { transform: rotate(90deg); }
 /* ── IYPT 2026 hero card (Swiss red theme) ───── */
 :root { --swiss-red: #D52B1E; }
 .mode-card-iypt26 {
-  border: 2px solid var(--swiss-red);
-  border-top: 4px solid var(--swiss-red);
-  background: linear-gradient(145deg, #fff 0%, #fff5f4 100%);
-  box-shadow: 0 4px 22px rgba(213,43,30,.08);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--swiss-red);
+  background: #fff;
+  box-shadow: 0 2px 14px rgba(0,0,0,.06);
 }
-.mode-card-iypt26:hover { border-color: var(--swiss-red); box-shadow: 0 6px 28px rgba(213,43,30,.18); }
+.mode-card-iypt26:hover { box-shadow: 0 4px 22px rgba(0,0,0,.10); }
 .mode-card-iypt26 .featured-top { align-items: center; }
 .mode-card-iypt26 .mode-title { color: var(--swiss-red); font-weight: 800; }
 .mode-card-iypt26 .featured-badge { background: var(--swiss-red) !important; color: #fff !important; }
 .iypt26-footer-badge { display: inline-block; margin-top: 14px; }
 .fun26-section { margin-top: 18px; }
-.fun26-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.fun26-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-items: start; }
 @media (max-width: 700px) { .fun26-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 420px) { .fun26-grid { grid-template-columns: 1fr; } }
-.fun26-card { background: rgba(213,43,30,.05); border: 1px solid rgba(213,43,30,.22); border-radius: 10px; padding: 10px; min-width: 0; }
-.fun26-card-title { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--swiss-red); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fun26-sub { font-size: .67rem; color: var(--muted); margin-bottom: 8px; }
+.fun26-card { background: rgba(213,43,30,.04); border: 1px solid rgba(213,43,30,.15); border-radius: 8px; padding: 10px; min-width: 0; display: flex; flex-direction: column; }
+.fun26-card-title { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--swiss-red); margin-bottom: 3px; }
+.fun26-sub { font-size: .67rem; color: var(--muted); margin-bottom: 8px; min-height: 2.6em; }
 .fun26-item { display: flex; align-items: center; gap: 5px; padding: 4px 0; border-bottom: 1px solid rgba(213,43,30,.1); cursor: pointer; }
 .fun26-item:last-child { border-bottom: none; }
 .fun26-item:hover .fun26-name { color: var(--swiss-red); }
