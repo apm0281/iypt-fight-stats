@@ -1023,7 +1023,7 @@ details[open] .rm-history-toggle::before { transform: rotate(90deg); }
 .mode-card-iypt26 .featured-top { align-items: center; }
 .mode-card-iypt26 .mode-title { color: var(--swiss-red); font-weight: 800; }
 .mode-card-iypt26 .featured-badge { background: var(--swiss-red) !important; color: #fff !important; }
-.iypt26-footer-badge { display: block; margin-top: 14px; text-align: center; }
+.iypt26-footer-badge { display: inline-block; margin-top: 14px; align-self: center; }
 .fun26-section { margin-top: 18px; }
 .fun26-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-items: start; }
 @media (max-width: 700px) { .fun26-grid { grid-template-columns: 1fr 1fr; } }
